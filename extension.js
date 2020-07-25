@@ -8,26 +8,37 @@
  * Heavily influenced by https://github.com/davidgodzsak/mouse-shake.js
  */
 
+const Gdk = imports.gi.Gdk;
+const Gio = imports.gi.Gio;
+const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
 const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
+const St = imports.gi.St;
+const Tweener = imports.ui.tweener;
 
 const HISTORY_MAX = 500;
 const INTERVAL_MS = 10;
-const SHAKE_THRESHOLD = 500;
+const SHAKE_THRESHOLD = 600;
+const SHAKE_FRAMES = 3;
 
+let frames = 0;
 let history = [];
 let jiggling = false;
+let lastPoint = {x: 0, y: 0};
+let pointerIcon;
 let pointerInterval;
 let pointerListener;
 
 /**
- * Stop the watchers and clean up any leftover assets.
+ * Stop the listeners and clean up any leftover assets.
  */
 function disable()
 {
     // reset to defaults
+    frames = 0;
     history = [];
     jiggling = false;
+    lastPoint = {x: 0, y: 0};
     // remove our pointer listener
     if (pointerListener) {
         PointerWatcher._removeWatch(pointerListener);
@@ -36,10 +47,14 @@ function disable()
     removeInterval();
 }
 
+/**
+ * Start the listeners.
+ */
 function enable()
 {
-    pointerListener = PointerWatcher.addWatch(INTERVAL_MS, listenerHandler);
-    intervalHandler();
+    // start the listeners
+    pointerListener = PointerWatcher.addWatch(INTERVAL_MS, mouseMove);
+    main();
 }
 
 /**
@@ -68,11 +83,17 @@ function gamma(st, nd, rd) {
     return gam;
 }
 
+/**
+ * Initialize (required by Gnome Shell).
+ */
 function init()
 {
 }
 
-function intervalHandler()
+/**
+ * Main application loop.
+ */
+function main()
 {
     // get the current loop timestamp
     let now = new Date().getTime();
@@ -84,32 +105,30 @@ function intervalHandler()
         }
     }
 
-    // reset degrees so we can add them again
-    let degrees = 0;
-    // add up gammas (deg=sum(gamma))
-    if (history.length > 2) {
-        for (let i = 2; i < history.length; ++i) {
-            degrees += gamma(history[i], history[i-1], history[i-2]);
+    if (SHAKE_FRAMES === frames++) {
+        frames = 0;
+        // reset degrees so we can add them again
+        let degrees = 0;
+        // add up gammas (deg=sum(gamma))
+        if (history.length > 2) {
+            for (let i = 2; i < history.length; ++i) {
+                degrees += gamma(history[i], history[i-1], history[i-2]);
+            }
         }
-    }
-
-    // if degree exceeds threshold shake event happens
-    if (degrees > SHAKE_THRESHOLD) {
-        if (!jiggling) {
-            log('jiggling started');
-            jiggling = true;
+    
+        // if degree exceeds threshold shake event happens
+        if (degrees > SHAKE_THRESHOLD) {
+            if (!jiggling) {
+                start();
+            }
         }
-    } else if (jiggling) {
-        log('jiggling stopped');
-        jiggling = false;
     }
 
     removeInterval();
-    pointerInterval = Mainloop.timeout_add(INTERVAL_MS, intervalHandler);
+    pointerInterval = Mainloop.timeout_add(INTERVAL_MS, main);
 
     return true;
 }
-
 
 /**
  * Watch for mouse jiggling!
@@ -117,10 +136,12 @@ function intervalHandler()
  * @param {Number} x
  * @param {Number} y
  */
-function listenerHandler(x, y)
+function mouseMove(x, y)
 {
     let now = new Date().getTime();
     history.push({x: x, y: y, t: now});
+    lastPoint.x = x;
+    lastPoint.y = y;
 }
 
 function removeInterval()
@@ -129,4 +150,39 @@ function removeInterval()
         Mainloop.source_remove(pointerInterval);
         pointerInterval = null;
     }
+}
+
+function start()
+{
+    jiggling = true;
+    
+    if (!pointerIcon) {
+        pointerIcon = new St.Icon({
+            gicon: new Gio.ThemedIcon({name: 'non-starred'}),
+            style_class: 'system-status-icon'
+        });
+        pointerIcon.set_icon_size(128);
+        Main.uiGroup.add_actor(pointerIcon);
+    }
+
+    pointerIcon.opacity = 255;
+    pointerIcon.set_position(lastPoint.x, lastPoint.y);
+
+    Tweener.addTween(pointerIcon, {
+        opacity: 0,
+        time: 2,
+        transition: 'easeOutQuad',
+        onComplete: stop,
+        onUpdate: function () {
+            pointerIcon.set_position(lastPoint.x - pointerIcon.width / 2, lastPoint.y - pointerIcon.height / 2);
+        }
+    });
+}
+
+function stop()
+{
+    jiggling = false;
+
+    Main.uiGroup.remove_actor(pointerIcon);
+    pointerIcon = null;
 }
