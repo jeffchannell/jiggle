@@ -1,0 +1,8 @@
+{
+    "uuid": "jiggle@jeffchannell.com",
+    "name": "Jiggle",
+    "description": "Jiggle",
+    "url": "https://github.com/jeffchannell/jiggle",
+    "shell-version": [ "3.28.4" ],
+    "version": "0.0.1"
+  }
