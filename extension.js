@@ -17,6 +17,7 @@ const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
 const St = imports.gi.St;
 const Tweener = imports.ui.tweener;
 
+const GROWTH_SPEED = 0.25;
 const HISTORY_MAX = 500;
 const ICON_MIN = parseInt(shell_exec("dconf read /org/gnome/desktop/interface/cursor-size"), 10) || 32;
 const ICON_MAX = ICON_MIN * 2;
@@ -37,6 +38,7 @@ let pointerListener;
 function disable()
 {
     // reset to defaults
+    cursor = {size: ICON_MIN, opacity: 0};
     history = [];
     jiggling = false;
     lastPoint = {x: 0, y: 0};
@@ -173,7 +175,7 @@ function start()
     if (!pointerIcon) {
         pointerIcon = new St.Icon({
             gicon: new Gio.ThemedIcon({name: 'non-starred'}),
-            style_class: 'system-status-icon'
+            style_class: 'jiggle-icon'
         });
         pointerIcon.set_icon_size(cursor.size);
         Main.uiGroup.add_actor(pointerIcon);
@@ -187,7 +189,7 @@ function start()
     Tweener.addTween(cursor, {
         opacity: 255,
         size: ICON_MAX,
-        time: 0.4,
+        time: GROWTH_SPEED,
         transition: 'easeOutQuad',
         onUpdate: onUpdate
     });
@@ -201,7 +203,7 @@ function stop()
     Tweener.addTween(cursor, {
         opacity: 0,
         size: ICON_MIN,
-        time: 0.4,
+        time: GROWTH_SPEED,
         transition: 'easeOutQuad',
         onComplete: function () {
             if (pointerIcon) {
