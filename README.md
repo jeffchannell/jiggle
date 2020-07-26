@@ -7,7 +7,7 @@ While not quite the same as the mouse shaking feature of OSX, it comes close.
 ## Installation
 
 ```bash
-curl -s https://github.com/jeffchannell/jiggle/blob/master/install.sh | bash
+curl -s https://raw.githubusercontent.com/jeffchannell/jiggle/master/install.sh | bash
 ```
 
 `© 2020 Jeff Channell`
