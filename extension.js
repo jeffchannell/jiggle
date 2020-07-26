@@ -10,6 +10,7 @@
 
 const Gdk = imports.gi.Gdk;
 const Gio = imports.gi.Gio;
+const GLib = imports.gi.GLib;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
 const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
@@ -17,11 +18,12 @@ const St = imports.gi.St;
 const Tweener = imports.ui.tweener;
 
 const HISTORY_MAX = 500;
+const ICON_MIN = parseInt(shell_exec("dconf read /org/gnome/desktop/interface/cursor-size"), 10) || 32;
+const ICON_MAX = ICON_MIN * 2;
 const INTERVAL_MS = 10;
 const SHAKE_THRESHOLD = 600;
-const SHAKE_FRAMES = 3;
 
-let frames = 0;
+let cursor = {size: ICON_MIN, opacity: 0};
 let history = [];
 let jiggling = false;
 let lastPoint = {x: 0, y: 0};
@@ -35,7 +37,6 @@ let pointerListener;
 function disable()
 {
     // reset to defaults
-    frames = 0;
     history = [];
     jiggling = false;
     lastPoint = {x: 0, y: 0};
@@ -105,23 +106,22 @@ function main()
         }
     }
 
-    if (SHAKE_FRAMES === frames++) {
-        frames = 0;
-        // reset degrees so we can add them again
-        let degrees = 0;
-        // add up gammas (deg=sum(gamma))
-        if (history.length > 2) {
-            for (let i = 2; i < history.length; ++i) {
-                degrees += gamma(history[i], history[i-1], history[i-2]);
-            }
+    // reset degrees so we can add them again
+    let degrees = 0;
+    // add up gammas (deg=sum(gamma))
+    if (history.length > 2) {
+        for (let i = 2; i < history.length; ++i) {
+            degrees += gamma(history[i], history[i-1], history[i-2]);
         }
-    
-        // if degree exceeds threshold shake event happens
-        if (degrees > SHAKE_THRESHOLD) {
-            if (!jiggling) {
-                start();
-            }
+    }
+
+    // if degree exceeds threshold shake event happens
+    if (degrees > SHAKE_THRESHOLD) {
+        if (!jiggling) {
+            start();
         }
+    } else if (jiggling) {
+        stop();
     }
 
     removeInterval();
@@ -142,6 +142,15 @@ function mouseMove(x, y)
     history.push({x: x, y: y, t: now});
     lastPoint.x = x;
     lastPoint.y = y;
+    onUpdate();
+}
+
+function onUpdate() {
+    if (pointerIcon) {
+        pointerIcon.opacity = cursor.opacity;
+        pointerIcon.set_icon_size(cursor.size);
+        pointerIcon.set_position(lastPoint.x - pointerIcon.width / 2, lastPoint.y - pointerIcon.height / 2);
+    }
 }
 
 function removeInterval()
@@ -150,6 +159,11 @@ function removeInterval()
         Mainloop.source_remove(pointerInterval);
         pointerInterval = null;
     }
+}
+
+function shell_exec(cmd)
+{
+    return GLib.spawn_command_line_sync(cmd)[1].toString();
 }
 
 function start()
@@ -161,28 +175,40 @@ function start()
             gicon: new Gio.ThemedIcon({name: 'non-starred'}),
             style_class: 'system-status-icon'
         });
-        pointerIcon.set_icon_size(128);
+        pointerIcon.set_icon_size(cursor.size);
         Main.uiGroup.add_actor(pointerIcon);
     }
 
-    pointerIcon.opacity = 255;
+    pointerIcon.opacity = cursor.opacity;
     pointerIcon.set_position(lastPoint.x, lastPoint.y);
 
-    Tweener.addTween(pointerIcon, {
-        opacity: 0,
-        time: 2,
+    Tweener.pauseTweens(cursor);
+    Tweener.removeTweens(cursor);
+    Tweener.addTween(cursor, {
+        opacity: 255,
+        size: ICON_MAX,
+        time: 0.4,
         transition: 'easeOutQuad',
-        onComplete: stop,
-        onUpdate: function () {
-            pointerIcon.set_position(lastPoint.x - pointerIcon.width / 2, lastPoint.y - pointerIcon.height / 2);
-        }
+        onUpdate: onUpdate
     });
 }
 
 function stop()
 {
     jiggling = false;
-
-    Main.uiGroup.remove_actor(pointerIcon);
-    pointerIcon = null;
+    Tweener.pauseTweens(cursor);
+    Tweener.removeTweens(cursor);
+    Tweener.addTween(cursor, {
+        opacity: 0,
+        size: ICON_MIN,
+        time: 0.4,
+        transition: 'easeOutQuad',
+        onComplete: function () {
+            if (pointerIcon) {
+                Main.uiGroup.remove_actor(pointerIcon);
+                pointerIcon = null;
+            }
+        },
+        onUpdate: onUpdate
+    });
 }
