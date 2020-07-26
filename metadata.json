@@ -3,6 +3,6 @@
     "name": "Jiggle",
     "description": "Jiggle",
     "url": "https://github.com/jeffchannell/jiggle",
-    "shell-version": [ "3.28.4" ],
+    "shell-version": [ "3.36.3" ],
     "version": "0.0.1"
   }
