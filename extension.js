@@ -22,6 +22,7 @@ const HISTORY_MAX = 500;
 const ICON_MIN = parseInt(shell_exec("dconf read /org/gnome/desktop/interface/cursor-size"), 10) || 32;
 const ICON_MAX = ICON_MIN * 2;
 const INTERVAL_MS = 10;
+const SHAKE_DISTANCE = 100;
 const SHAKE_THRESHOLD = 600;
 
 let cursor = {size: ICON_MIN, opacity: 0};
@@ -48,6 +49,11 @@ function disable()
     }
     // stop the interval
     removeInterval();
+}
+
+function distance(p1, p2)
+{
+    return Math.sqrt(Math.pow(p2.x-p1.x,2)+Math.pow(p2.y-p1.y,2));
 }
 
 /**
@@ -110,15 +116,17 @@ function main()
 
     // reset degrees so we can add them again
     let degrees = 0;
+    let maxDistance = 0;
     // add up gammas (deg=sum(gamma))
     if (history.length > 2) {
         for (let i = 2; i < history.length; ++i) {
             degrees += gamma(history[i], history[i-1], history[i-2]);
+            maxDistance = Math.max(maxDistance, distance(history[i-2], history[i-1]), distance(history[i-1], history[i]));
         }
     }
 
     // if degree exceeds threshold shake event happens
-    if (degrees > SHAKE_THRESHOLD) {
+    if (degrees > SHAKE_THRESHOLD && maxDistance > SHAKE_DISTANCE) {
         if (!jiggling) {
             start();
         }
