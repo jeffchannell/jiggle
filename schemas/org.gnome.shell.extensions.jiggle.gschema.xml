@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- rebuild: glib-compile-schemas schemas/ -->
+<schemalist>
+    <schema id="org.gnome.shell.extensions.jiggle" path="/org/gnome/shell/extensions/jiggle/">
+        <!-- See also: https://developer.gnome.org/glib/stable/gvariant-format-strings.html -->
+        <key name="growth-speed" type="d">
+            <default>0.4</default>
+        </key>
+        <key name="shake-threshold" type="i">
+            <default>600</default>
+        </key>
+    </schema>
+</schemalist>

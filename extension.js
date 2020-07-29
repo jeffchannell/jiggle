@@ -8,22 +8,22 @@
  * Heavily influenced by https://github.com/davidgodzsak/mouse-shake.js
  */
 
+const ExtensionUtils = imports.misc.extensionUtils;
 const Gdk = imports.gi.Gdk;
 const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
+const Me = ExtensionUtils.getCurrentExtension();
 const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
 const St = imports.gi.St;
 const Tweener = imports.ui.tweener;
 
-const GROWTH_SPEED = 0.25;
 const HISTORY_MAX = 500;
 const ICON_MIN = parseInt(shell_exec("dconf read /org/gnome/desktop/interface/cursor-size"), 10) || 32;
 const ICON_MAX = ICON_MIN * 2;
 const INTERVAL_MS = 10;
 const SHAKE_DISTANCE = 100;
-const SHAKE_THRESHOLD = 600;
 
 let cursor = {size: ICON_MIN, opacity: 0};
 let history = [];
@@ -32,6 +32,12 @@ let lastPoint = {x: 0, y: 0};
 let pointerIcon;
 let pointerInterval;
 let pointerListener;
+let settings;
+
+let GROWTH_SPEED;
+let GROWTH_SPEED_ID;
+let SHAKE_THRESHOLD;
+let SHAKE_THRESHOLD_ID;
 
 /**
  * Stop the listeners and clean up any leftover assets.
@@ -49,6 +55,10 @@ function disable()
     }
     // stop the interval
     removeInterval();
+    // disconnect from the settings
+    settings.disconnect(GROWTH_SPEED_ID);
+    settings.disconnect(SHAKE_THRESHOLD_ID);
+    settings = null;
 }
 
 function distance(p1, p2)
@@ -61,6 +71,29 @@ function distance(p1, p2)
  */
 function enable()
 {
+    // Get the GSchema source so we can lookup our settings
+    let gschema = Gio.SettingsSchemaSource.new_from_directory(
+        Me.dir.get_child('schemas').get_path(),
+        Gio.SettingsSchemaSource.get_default(),
+        false
+    );
+    settings = new Gio.Settings({
+        settings_schema: gschema.lookup('org.gnome.shell.extensions.jiggle', true)
+    });
+
+    // sync settings
+    let growthSpeedFetch = function () {
+        GROWTH_SPEED = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
+    };
+    growthSpeedFetch();
+    GROWTH_SPEED_ID = settings.connect('changed::growth-speed', growthSpeedFetch);
+
+    let shakeThresholdFetch = function () {
+        SHAKE_THRESHOLD = Math.max(10, Math.min(1000, parseInt(settings.get_value('shake-threshold').deep_unpack(), 10)));
+    };
+    shakeThresholdFetch();
+    SHAKE_THRESHOLD_ID = settings.connect('changed::growth-speed', shakeThresholdFetch);
+
     // start the listeners
     pointerListener = PointerWatcher.addWatch(INTERVAL_MS, mouseMove);
     main();
