@@ -34,10 +34,10 @@ let pointerInterval;
 let pointerListener;
 let settings;
 
-let GROWTH_SPEED;
-let GROWTH_SPEED_ID;
-let SHAKE_THRESHOLD;
-let SHAKE_THRESHOLD_ID;
+let growthSpeed;
+let growthSpeedID;
+let shakeThreshold;
+let shakeThresholdID;
 
 /**
  * Stop the listeners and clean up any leftover assets.
@@ -56,8 +56,8 @@ function disable()
     // stop the interval
     removeInterval();
     // disconnect from the settings
-    settings.disconnect(GROWTH_SPEED_ID);
-    settings.disconnect(SHAKE_THRESHOLD_ID);
+    settings.disconnect(growthSpeedID);
+    settings.disconnect(shakeThresholdID);
     settings = null;
 }
 
@@ -83,16 +83,16 @@ function enable()
 
     // sync settings
     let growthSpeedFetch = function () {
-        GROWTH_SPEED = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
+        growthSpeed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
     };
     growthSpeedFetch();
-    GROWTH_SPEED_ID = settings.connect('changed::growth-speed', growthSpeedFetch);
+    growthSpeedID = settings.connect('changed::growth-speed', growthSpeedFetch);
 
     let shakeThresholdFetch = function () {
-        SHAKE_THRESHOLD = Math.max(10, Math.min(1000, parseInt(settings.get_value('shake-threshold').deep_unpack(), 10)));
+        shakeThreshold = Math.max(10, Math.min(1000, parseInt(settings.get_value('shake-threshold').deep_unpack(), 10)));
     };
     shakeThresholdFetch();
-    SHAKE_THRESHOLD_ID = settings.connect('changed::growth-speed', shakeThresholdFetch);
+    shakeThresholdID = settings.connect('changed::shake-threshold', shakeThresholdFetch);
 
     // start the listeners
     pointerListener = PointerWatcher.addWatch(INTERVAL_MS, mouseMove);
@@ -159,7 +159,7 @@ function main()
     }
 
     // if degree exceeds threshold shake event happens
-    if (degrees > SHAKE_THRESHOLD && maxDistance > SHAKE_DISTANCE) {
+    if (degrees > shakeThreshold && maxDistance > SHAKE_DISTANCE) {
         if (!jiggling) {
             start();
         }
@@ -230,7 +230,7 @@ function start()
     Tweener.addTween(cursor, {
         opacity: 255,
         size: ICON_MAX,
-        time: GROWTH_SPEED,
+        time: growthSpeed,
         transition: 'easeOutQuad',
         onUpdate: onUpdate
     });
@@ -244,7 +244,7 @@ function stop()
     Tweener.addTween(cursor, {
         opacity: 0,
         size: ICON_MIN,
-        time: GROWTH_SPEED,
+        time: growthSpeed,
         transition: 'easeOutQuad',
         onComplete: function () {
             if (pointerIcon) {
