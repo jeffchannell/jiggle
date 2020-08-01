@@ -25,7 +25,7 @@ const HISTORY_MAX = 500;
 const ICON_MIN = parseInt(Jiggle.shell_exec("dconf read /org/gnome/desktop/interface/cursor-size"), 10) || 32;
 const ICON_MAX = ICON_MIN * 2;
 const INTERVAL_MS = 10;
-const SHAKE_DEGREES = 100;
+const SHAKE_DEGREES = 500;
 
 let cursor = {size: ICON_MIN, opacity: 0};
 let history = [];
