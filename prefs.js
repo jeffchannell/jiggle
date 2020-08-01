@@ -1,33 +1,22 @@
 'use strict';
 
-const Gio = imports.gi.Gio;
-const GLib = imports.gi.GLib;
 const Gtk = imports.gi.Gtk;
 
 // It's common practice to keep GNOME API and JS imports in separate blocks
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
+const Jiggle = Me.imports.jiggle;
 
 let settings;
 
 // Like `extension.js` this is used for any one-time setup like translations.
 function init() {
-    log(`initializing ${Me.metadata.name} Preferences`);
 }
 
 
 // This function is called when the preferences window is first created to build and return a Gtk widget.
 function buildPrefsWidget() {
-    // Copy the same GSettings code from `extension.js`
-    let gschema = Gio.SettingsSchemaSource.new_from_directory(
-        Me.dir.get_child('schemas').get_path(),
-        Gio.SettingsSchemaSource.get_default(),
-        false
-    );
-
-    settings = new Gio.Settings({
-        settings_schema: gschema.lookup('org.gnome.shell.extensions.jiggle', true)
-    });
+    settings = Jiggle.settings();
 
     // Create a parent widget that we'll return from this function
     let prefsWidget = new Gtk.Grid({
@@ -79,12 +68,24 @@ function buildPrefsWidget() {
         visible: true
     });
     shakeWidget.set_digits(0);
-    shakeWidget.set_range(10, 1000);
+    shakeWidget.set_range(10, 500);
     shakeWidget.set_value(settings.get_value('shake-threshold').deep_unpack());
     prefsWidget.attach(shakeWidget, 1, 2, 20, 1);
 
     // connect the change event
     shakeWidget.connect('value-changed', (widget) => settings.set_int('shake-threshold', widget.get_value()));
+
+    // add an update button that pulls latest from GitHub
+    let updateWidget = new Gtk.Button({
+        label: 'Update',
+        visible: true
+    });
+    prefsWidget.attach(updateWidget, 1, 3, 20, 1);
+
+    // connect handler to the button click signal
+    updateWidget.connect('clicked', function (button) {
+        Jiggle.shell_exec("gnome-terminal -t 'Updating Jiggle' --hide-menubar -- '" + Me.dir.get_path() + "/update.sh'");
+    });
 
     return prefsWidget;
 }

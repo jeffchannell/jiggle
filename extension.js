@@ -14,16 +14,18 @@ const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
-const Me = ExtensionUtils.getCurrentExtension();
-const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
 const St = imports.gi.St;
 const Tweener = imports.ui.tweener;
 
+const Me = ExtensionUtils.getCurrentExtension();
+const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
+const Jiggle = Me.imports.jiggle;
+
 const HISTORY_MAX = 500;
-const ICON_MIN = parseInt(shell_exec("dconf read /org/gnome/desktop/interface/cursor-size"), 10) || 32;
+const ICON_MIN = parseInt(Jiggle.shell_exec("dconf read /org/gnome/desktop/interface/cursor-size"), 10) || 32;
 const ICON_MAX = ICON_MIN * 2;
 const INTERVAL_MS = 10;
-const SHAKE_DISTANCE = 100;
+const SHAKE_DEGREES = 100;
 
 let cursor = {size: ICON_MIN, opacity: 0};
 let history = [];
@@ -71,15 +73,7 @@ function distance(p1, p2)
  */
 function enable()
 {
-    // Get the GSchema source so we can lookup our settings
-    let gschema = Gio.SettingsSchemaSource.new_from_directory(
-        Me.dir.get_child('schemas').get_path(),
-        Gio.SettingsSchemaSource.get_default(),
-        false
-    );
-    settings = new Gio.Settings({
-        settings_schema: gschema.lookup('org.gnome.shell.extensions.jiggle', true)
-    });
+    settings = Jiggle.settings();
 
     // sync settings
     let growthSpeedFetch = function () {
@@ -89,7 +83,7 @@ function enable()
     growthSpeedID = settings.connect('changed::growth-speed', growthSpeedFetch);
 
     let shakeThresholdFetch = function () {
-        shakeThreshold = Math.max(10, Math.min(1000, parseInt(settings.get_value('shake-threshold').deep_unpack(), 10)));
+        shakeThreshold = Math.max(10, Math.min(500, parseInt(settings.get_value('shake-threshold').deep_unpack(), 10)));
     };
     shakeThresholdFetch();
     shakeThresholdID = settings.connect('changed::shake-threshold', shakeThresholdFetch);
@@ -159,7 +153,7 @@ function main()
     }
 
     // if degree exceeds threshold shake event happens
-    if (degrees > shakeThreshold && maxDistance > SHAKE_DISTANCE) {
+    if (degrees > SHAKE_DEGREES && maxDistance > shakeThreshold) {
         if (!jiggling) {
             start();
         }
