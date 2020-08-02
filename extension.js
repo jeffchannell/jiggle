@@ -198,11 +198,6 @@ function removeInterval()
     }
 }
 
-function shell_exec(cmd)
-{
-    return GLib.spawn_command_line_sync(cmd)[1].toString();
-}
-
 function start()
 {
     jiggling = true;
