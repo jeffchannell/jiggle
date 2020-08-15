@@ -32,6 +32,7 @@ let history = [];
 let jiggling = false;
 let lastPoint = {x: 0, y: 0};
 let pointerIcon;
+let pointerImage;
 let pointerInterval;
 let pointerListener;
 let settings;
@@ -40,6 +41,18 @@ let growthSpeed;
 let growthSpeedID;
 let shakeThreshold;
 let shakeThresholdID;
+
+function getCursor()
+{
+    if (!pointerImage) {
+        let display = Gdk.Display.get_default();
+        let cursor = Gdk.Cursor.new_from_name(display, 'arrow');
+        pointerImage = cursor.get_image();
+    }
+    return new St.Icon({
+        gicon: pointerImage
+    });
+}
 
 /**
  * Stop the listeners and clean up any leftover assets.
@@ -203,11 +216,7 @@ function start()
     jiggling = true;
     
     if (!pointerIcon) {
-        pointerIcon = new St.Icon({
-            gicon: new Gio.ThemedIcon({name: 'non-starred'}),
-            style_class: 'jiggle-icon'
-        });
-        pointerIcon.set_icon_size(cursor.size);
+        pointerIcon = getCursor();
         Main.uiGroup.add_actor(pointerIcon);
     }
 
