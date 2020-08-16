@@ -75,17 +75,5 @@ function buildPrefsWidget() {
     // connect the change event
     shakeWidget.connect('value-changed', (widget) => settings.set_int('shake-threshold', widget.get_value()));
 
-    // add an update button that pulls latest from GitHub
-    let updateWidget = new Gtk.Button({
-        label: 'Update',
-        visible: true
-    });
-    prefsWidget.attach(updateWidget, 1, 3, 20, 1);
-
-    // connect handler to the button click signal
-    updateWidget.connect('clicked', function (button) {
-        Jiggle.shell_exec("gnome-terminal -t 'Updating Jiggle' --hide-menubar -- '" + Me.dir.get_path() + "/update.sh'");
-    });
-
     return prefsWidget;
 }
