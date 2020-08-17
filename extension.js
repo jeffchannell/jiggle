@@ -9,19 +9,14 @@
  */
 
 const ExtensionUtils = imports.misc.extensionUtils;
-const Gdk = imports.gi.Gdk;
-const Gio = imports.gi.Gio;
-const GLib = imports.gi.GLib;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
 const St = imports.gi.St;
-const Tweener = imports.ui.tweener;
 
 const Me = ExtensionUtils.getCurrentExtension();
 const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
 const JCursor = Me.imports.cursor;
 const JHistory = Me.imports.history;
-const JMath = Me.imports.math;
 const JSettings = Me.imports.settings;
 
 const INTERVAL_MS = 10;
