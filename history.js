@@ -12,6 +12,8 @@ try {
 }
 
 let history = [];
+var lastX = 0;
+var lastY = 0;
 var threshold = 300;
 
 /**
@@ -50,6 +52,8 @@ function check()
  */
 function clear()
 {
+    lastX = 0;
+    lastY = 0;
     history = [];
 }
 
@@ -61,5 +65,5 @@ function clear()
  */
 function push(x, y)
 {
-    history.push({x: x, y: y, t: new Date().getTime()});
+    history.push({x: lastX = x, y: lastY = y, t: new Date().getTime()});
 }

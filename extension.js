@@ -24,21 +24,15 @@ const JHistory = Me.imports.history;
 const JMath = Me.imports.math;
 const JSettings = Me.imports.settings;
 
-const ICON_MIN = JCursor.getCursor().get_image().get_width() || 32;
-const ICON_MAX = ICON_MIN * 3;
 const INTERVAL_MS = 10;
-const SHAKE_DEGREES = 500;
 
-let cursor = {size: ICON_MIN, opacity: 0};
 let jiggling = false;
-let lastPoint = {x: 0, y: 0};
 let pointerIcon;
 let pointerImage;
 let pointerInterval;
 let pointerListener;
 let settings;
 
-let growthSpeed;
 let growthSpeedID;
 let shakeThresholdID;
 
@@ -59,9 +53,7 @@ function getCursor()
 function disable()
 {
     // reset to defaults
-    cursor = {size: ICON_MIN, opacity: 0};
     jiggling = false;
-    lastPoint = {x: 0, y: 0};
     JHistory.clear();
     // remove our pointer listener
     if (pointerListener) {
@@ -84,7 +76,7 @@ function enable()
 
     // sync settings
     let growthSpeedFetch = function () {
-        growthSpeed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
+        JCursor.speed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
     };
     growthSpeedFetch();
     growthSpeedID = settings.connect('changed::growth-speed', growthSpeedFetch);
@@ -114,9 +106,11 @@ function main()
 {
     if (JHistory.check()) {
         if (!jiggling) {
+            jiggling = true;
             start();
         }
     } else if (jiggling) {
+        jiggling = false;
         stop();
     }
 
@@ -133,16 +127,14 @@ function main()
 function mouseMove(x, y)
 {
     JHistory.push(x, y);
-    lastPoint.x = x;
-    lastPoint.y = y;
     onUpdate();
 }
 
 function onUpdate() {
     if (pointerIcon) {
-        pointerIcon.opacity = cursor.opacity;
-        pointerIcon.set_icon_size(cursor.size);
-        pointerIcon.set_position(lastPoint.x - pointerIcon.width / 2, lastPoint.y - pointerIcon.height / 2);
+        pointerIcon.opacity = JCursor.getOpacity();
+        pointerIcon.set_icon_size(JCursor.getSize());
+        pointerIcon.set_position(JHistory.lastX - pointerIcon.width / 2, JHistory.lastY - pointerIcon.height / 2);
     }
 }
 
@@ -155,44 +147,24 @@ function removeInterval()
 }
 
 function start()
-{
-    jiggling = true;
-    
+{   
     if (!pointerIcon) {
         pointerIcon = getCursor();
         Main.uiGroup.add_actor(pointerIcon);
     }
 
-    pointerIcon.opacity = cursor.opacity;
-    pointerIcon.set_position(lastPoint.x, lastPoint.y);
+    pointerIcon.opacity = JCursor.getOpacity();
+    pointerIcon.set_position(JHistory.lastX, JHistory.lastY);
 
-    Tweener.pauseTweens(cursor);
-    Tweener.removeTweens(cursor);
-    Tweener.addTween(cursor, {
-        opacity: 255,
-        size: ICON_MAX,
-        time: growthSpeed,
-        transition: 'easeOutQuad',
-        onUpdate: onUpdate
-    });
+    JCursor.fadeIn(onUpdate, null);
 }
 
 function stop()
 {
-    jiggling = false;
-    Tweener.pauseTweens(cursor);
-    Tweener.removeTweens(cursor);
-    Tweener.addTween(cursor, {
-        opacity: 0,
-        size: ICON_MIN,
-        time: growthSpeed,
-        transition: 'easeOutQuad',
-        onComplete: function () {
-            if (pointerIcon) {
-                Main.uiGroup.remove_actor(pointerIcon);
-                pointerIcon = null;
-            }
-        },
-        onUpdate: onUpdate
+    JCursor.fadeOut(onUpdate, function () {
+        if (pointerIcon) {
+            Main.uiGroup.remove_actor(pointerIcon);
+            pointerIcon = null;
+        }
     });
 }

@@ -86,3 +86,19 @@ suite.addTest("check", function() {
     // confirm jiggle
     gjsunit.assertTrue(history.check());
 });
+
+suite.addTest("clear", function() {
+    let history = imports.history;
+
+    // reset
+    history.clear();
+    // last x & y should be 0
+    gjsunit.assertEquals(0, history.lastX);
+    gjsunit.assertEquals(0, history.lastY);
+    // add some history
+    history.push(10, 20);
+    // last x & y should be set
+    gjsunit.assertEquals(10, history.lastX);
+    gjsunit.assertEquals(20, history.lastY);
+    history.clear();
+});
