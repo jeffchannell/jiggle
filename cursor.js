@@ -21,6 +21,14 @@ var max = min * 3;
 
 let target = {opacity: 0, size: min};
 
+/**
+ * Fade the cursor target.
+ * 
+ * @param {Number} o opacity
+ * @param {Number} s size
+ * @param {Function} onUpdate update callback
+ * @param {Function} onComplete complete callback
+ */
 function fade(o, s, onUpdate, onComplete)
 {
     let tween = {
@@ -40,16 +48,33 @@ function fade(o, s, onUpdate, onComplete)
     Tweener.addTween(target, tween);
 }
 
+/**
+ * Fade the cursor target in.
+ * 
+ * @param {Function} onUpdate update callback
+ * @param {Function} onComplete complete callback
+ */
 function fadeIn(onUpdate, onComplete)
 {
     fade(255, max, onUpdate, onComplete);
 }
 
+/**
+ * Fade the cursor target out.
+ * 
+ * @param {Function} onUpdate update callback
+ * @param {Function} onComplete complete callback
+ */
 function fadeOut(onUpdate, onComplete)
 {
     fade(0, min, onUpdate, onComplete);
 }
 
+/**
+ * Get the cursor.
+ * 
+ * @return {imports.gi.Gdk.Cursor} Gdk cursor
+ */
 function getCursor()
 {
     if (!cursor) {
@@ -60,11 +85,21 @@ function getCursor()
     return cursor;
 }
 
+/**
+ * Get cursor opacity.
+ * 
+ * @return {Number} cursor opacity
+ */
 function getOpacity()
 {
     return target.opacity;
 }
 
+/**
+ * Get cursor size.
+ * 
+ * @return {Number} cursor size
+ */
 function getSize()
 {
     return target.size;

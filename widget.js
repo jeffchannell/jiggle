@@ -8,6 +8,16 @@ if (imports.gi.versions && !imports.gi.versions.Gtk) {
 
 const Gtk = imports.gi.Gtk;
 
+/**
+ * Get an HScale widget.
+ * 
+ * @param {Number} digits 
+ * @param {Number} min 
+ * @param {Number} max 
+ * @param {*} value 
+ * 
+ * @return {imports.gi.Gtk.HScale} HScale widget
+ */
 function hscale(digits, min, max, value)
 {
     let widget = new Gtk.HScale({
@@ -20,6 +30,13 @@ function hscale(digits, min, max, value)
     return widget;
 }
 
+/**
+ * Get a Label widget.
+ * 
+ * @param {String} text
+ * 
+ * @return {imports.gi.Gtk.Label} Label widget
+ */
 function label(text)
 {
     let options = {

@@ -2,6 +2,11 @@
 
 const Gio = imports.gi.Gio;
 
+/**
+ * Get the extension settings.
+ * 
+ * @return {imports.gi.Gio.Settings} extension settings
+ */
 function settings()
 {
     let path;
