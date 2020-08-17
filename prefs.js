@@ -6,6 +6,7 @@ const Gtk = imports.gi.Gtk;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const JSettings = Me.imports.settings;
+const JWidget = Me.imports.widget;
 
 let settings;
 
@@ -19,61 +20,36 @@ function buildPrefsWidget() {
     settings = JSettings.settings();
 
     // Create a parent widget that we'll return from this function
-    let prefsWidget = new Gtk.Grid({
+    let grid = new Gtk.Grid({
         margin: 18,
         column_spacing: 12,
         row_spacing: 12,
         visible: true
     });
 
-    // Add a simple title and add it to the prefsWidget
-    let title = new Gtk.Label({
-        label: '<b>' + Me.metadata.name + ' version ' + Me.metadata.version + ' Extension Preferences</b>',
-        halign: Gtk.Align.START,
-        use_markup: true,
-        visible: true
-    });
-    prefsWidget.attach(title, 0, 0, 2, 1);
+    // Add a simple title and add it to the grid
+    let title = '<b>' + Me.metadata.name + ' version ' + Me.metadata.version + ' Extension Preferences</b>';
+    grid.attach(JWidget.label(title), 0, 0, 2, 1);
 
     // Create a label for growth speed
-    let growthLabel = new Gtk.Label({
-        label: 'Growth Speed',
-        halign: Gtk.Align.START,
-        visible: true
-    });
-    prefsWidget.attach(growthLabel, 0, 1, 1, 1);
+    grid.attach(JWidget.label('Growth Speed'), 0, 1, 1, 1);
 
     // Create a widget for growth speed
-    let growthWidget = new Gtk.HScale({
-        visible: true
-    });
-    growthWidget.set_digits(2);
-    growthWidget.set_range(0.1, 1.0);
-    growthWidget.set_value(settings.get_value('growth-speed').deep_unpack());
-    prefsWidget.attach(growthWidget, 1, 1, 20, 1);
+    let growth = JWidget.hscale(2, 0.1, 1.0, settings.get_value('growth-speed').deep_unpack());
+    grid.attach(growth, 1, 1, 20, 1);
 
     // connect the change event
-    growthWidget.connect('value-changed', (widget) => settings.set_double('growth-speed', widget.get_value()));
+    growth.connect('value-changed', (widget) => settings.set_double('growth-speed', widget.get_value()));
 
     // Create a label for shake threshold
-    let shakeLabel = new Gtk.Label({
-        label: 'Shake Threshold',
-        halign: Gtk.Align.START,
-        visible: true
-    });
-    prefsWidget.attach(shakeLabel, 0, 2, 1, 1);
+    grid.attach(JWidget.label('Shake Threshold'), 0, 2, 1, 1);
 
     // Create a widget for shake threshold
-    let shakeWidget = new Gtk.HScale({
-        visible: true
-    });
-    shakeWidget.set_digits(0);
-    shakeWidget.set_range(10, 500);
-    shakeWidget.set_value(settings.get_value('shake-threshold').deep_unpack());
-    prefsWidget.attach(shakeWidget, 1, 2, 20, 1);
+    let shake = JWidget.hscale(0, 10, 500, settings.get_value('shake-threshold').deep_unpack());
+    grid.attach(shake, 1, 2, 20, 1);
 
     // connect the change event
-    shakeWidget.connect('value-changed', (widget) => settings.set_int('shake-threshold', widget.get_value()));
+    shake.connect('value-changed', (widget) => settings.set_int('shake-threshold', widget.get_value()));
 
-    return prefsWidget;
+    return grid;
 }
