@@ -5,7 +5,7 @@ const Gtk = imports.gi.Gtk;
 // It's common practice to keep GNOME API and JS imports in separate blocks
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Jiggle = Me.imports.jiggle;
+const JSettings = Me.imports.settings;
 
 let settings;
 
@@ -16,7 +16,7 @@ function init() {
 
 // This function is called when the preferences window is first created to build and return a Gtk widget.
 function buildPrefsWidget() {
-    settings = Jiggle.settings();
+    settings = JSettings.settings();
 
     // Create a parent widget that we'll return from this function
     let prefsWidget = new Gtk.Grid({

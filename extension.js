@@ -19,10 +19,13 @@ const Tweener = imports.ui.tweener;
 
 const Me = ExtensionUtils.getCurrentExtension();
 const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
-const Jiggle = Me.imports.jiggle;
+const JCursor = Me.imports.cursor;
+const JMath = Me.imports.math;
+const JSettings = Me.imports.settings;
+const JUtils = Me.imports.utils;
 
 const HISTORY_MAX = 500;
-const ICON_MIN = parseInt(Jiggle.shell_exec("dconf read /org/gnome/desktop/interface/cursor-size"), 10) || 32;
+const ICON_MIN = parseInt(JUtils.shell_exec("dconf read /org/gnome/desktop/interface/cursor-size"), 10) || 32;
 const ICON_MAX = ICON_MIN * 2;
 const INTERVAL_MS = 10;
 const SHAKE_DEGREES = 500;
@@ -45,10 +48,9 @@ let shakeThresholdID;
 function getCursor()
 {
     if (!pointerImage) {
-        let display = Gdk.Display.get_default();
-        let cursor = Gdk.Cursor.new_from_name(display, 'arrow');
-        pointerImage = cursor.get_image();
+        pointerImage = JCursor.getCursor().get_image();
     }
+
     return new St.Icon({
         gicon: pointerImage
     });
@@ -76,17 +78,12 @@ function disable()
     settings = null;
 }
 
-function distance(p1, p2)
-{
-    return Math.sqrt(Math.pow(p2.x-p1.x,2)+Math.pow(p2.y-p1.y,2));
-}
-
 /**
  * Start the listeners.
  */
 function enable()
 {
-    settings = Jiggle.settings();
+    settings = JSettings.settings();
 
     // sync settings
     let growthSpeedFetch = function () {
@@ -104,32 +101,6 @@ function enable()
     // start the listeners
     pointerListener = PointerWatcher.addWatch(INTERVAL_MS, mouseMove);
     main();
-}
-
-/**
- * Get gamma in triangles using law of cosines
- * 
- * @param {Object} st
- * @param {Object} nd
- * @param {Object} rd
- * 
- * @return {Number}
- */
-function gamma(st, nd, rd) {
-    // pythagoras
-    var a = Math.sqrt(Math.pow(st.x-nd.x,2)+Math.pow(st.y-nd.y,2));
-    var b = Math.sqrt(Math.pow(nd.x-rd.x,2)+Math.pow(nd.y-rd.y,2));
-    var c = Math.sqrt(Math.pow(rd.x-st.x,2)+Math.pow(rd.y-st.y,2));
-    var gam;
-
-    if (0 === a * b) {
-        gam = 0;
-    } else {
-        // law of cosines
-        gam = 180-Math.acos((Math.pow(a,2)+Math.pow(b,2)-Math.pow(c,2))/(2*a*b))*180/Math.PI;
-    }
-
-    return gam;
 }
 
 /**
@@ -160,8 +131,8 @@ function main()
     // add up gammas (deg=sum(gamma))
     if (history.length > 2) {
         for (let i = 2; i < history.length; ++i) {
-            degrees += gamma(history[i], history[i-1], history[i-2]);
-            maxDistance = Math.max(maxDistance, distance(history[i-2], history[i-1]), distance(history[i-1], history[i]));
+            degrees += JMath.gamma(history[i], history[i-1], history[i-2]);
+            maxDistance = Math.max(maxDistance, JMath.distance(history[i-2], history[i-1]), JMath.distance(history[i-1], history[i]));
         }
     }
 
@@ -176,8 +147,6 @@ function main()
 
     removeInterval();
     pointerInterval = Mainloop.timeout_add(INTERVAL_MS, main);
-
-    return true;
 }
 
 /**
