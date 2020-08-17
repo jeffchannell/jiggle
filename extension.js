@@ -22,11 +22,10 @@ const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
 const JCursor = Me.imports.cursor;
 const JMath = Me.imports.math;
 const JSettings = Me.imports.settings;
-const JUtils = Me.imports.utils;
 
 const HISTORY_MAX = 500;
-const ICON_MIN = parseInt(JUtils.shell_exec("dconf read /org/gnome/desktop/interface/cursor-size"), 10) || 32;
-const ICON_MAX = ICON_MIN * 2;
+const ICON_MIN = JCursor.getCursor().get_image().get_width() || 32;
+const ICON_MAX = ICON_MIN * 3;
 const INTERVAL_MS = 10;
 const SHAKE_DEGREES = 500;
 
