@@ -4,19 +4,24 @@ let cursor;
 let Tweener;
 
 // necessary for tests, but not extension
-if (imports.gi.versions && !imports.gi.versions.Gdk) {
+try {
+    Tweener = imports.ui.tweener;
+} catch (err) {
     imports.gi.versions.Gdk = '3.0';
     imports.gi.versions.Gtk = '3.0';
     imports.gi.Gtk.init(null);
     Tweener = imports.tweener.tweener;
-} else {
-    Tweener = imports.ui.tweener;
 }
 
 const Gdk = imports.gi.Gdk;
 
 var speed = 0.4;
-var min = getCursor().get_image().get_width() || 32;
+var min;
+try {
+    min = getCursor().get_image().get_width();
+} catch (err) {
+    min = 32;
+}
 var max = min * 3;
 
 let target = {opacity: 0, size: min};
