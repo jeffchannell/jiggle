@@ -10,4 +10,12 @@ Tests use [GjsUnit](https://github.com/romu70/GjsUnit/), which is included here,
 ./test.js
 ```
 
+## Docker Testing
+
+Multiple systems can be tested via Docker:
+
+```bash
+./rundockertest.sh
+```
+
 `© 2020 Jeff Channell`
