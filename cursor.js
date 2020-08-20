@@ -24,7 +24,7 @@ try {
 }
 var max = min * 3;
 
-let target = {opacity: 255, size: min};
+let target = {size: min};
 
 /**
  * Fade the cursor target.
