@@ -22,20 +22,33 @@ const JSettings = Me.imports.settings;
 const INTERVAL_MS = 10;
 
 let jiggling = false;
+let cursor;
 let pointerIcon;
 let pointerImage;
 let pointerInterval;
 let pointerListener;
 let settings;
+let xhot;
+let yhot;
 
 let growthSpeedID;
 let shakeThresholdID;
 
 function getCursor()
 {
-    if (!pointerImage) {
-        pointerImage = JCursor.getCursor().get_image();
+    if (!cursor) {
+        cursor = JCursor.getCursor();
     }
+
+    if (!pointerImage) {
+        pointerImage = cursor.get_image();
+    }
+
+    try {
+        let s = cursor.get_surface();
+        xhot = s[2];
+        yhot = s[1];
+    } catch (err) {}
 
     return new St.Icon({
         gicon: pointerImage
@@ -127,9 +140,13 @@ function mouseMove(x, y)
 
 function onUpdate() {
     if (pointerIcon) {
-        pointerIcon.opacity = JCursor.getOpacity();
-        pointerIcon.set_icon_size(JCursor.getSize());
-        pointerIcon.set_position(JHistory.lastX - pointerIcon.width / 2, JHistory.lastY - pointerIcon.height / 2);
+        let s = JCursor.getSize();
+        let r = s / JCursor.min;
+        pointerIcon.set_icon_size(s);
+        pointerIcon.set_position(
+            (JHistory.lastX - pointerIcon.width / 2) + (xhot * r),
+            (JHistory.lastY - pointerIcon.height / 2) + (yhot * r)
+        );
     }
 }
 
@@ -148,7 +165,6 @@ function start()
         Main.uiGroup.add_actor(pointerIcon);
     }
 
-    pointerIcon.opacity = JCursor.getOpacity();
     pointerIcon.set_position(JHistory.lastX, JHistory.lastY);
 
     JCursor.fadeIn(onUpdate, null);

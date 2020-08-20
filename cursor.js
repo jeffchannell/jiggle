@@ -24,20 +24,18 @@ try {
 }
 var max = min * 3;
 
-let target = {opacity: 0, size: min};
+let target = {opacity: 255, size: min};
 
 /**
  * Fade the cursor target.
  * 
- * @param {Number} o opacity
  * @param {Number} s size
  * @param {Function} onUpdate update callback
  * @param {Function} onComplete complete callback
  */
-function fade(o, s, onUpdate, onComplete)
+function fade(s, onUpdate, onComplete)
 {
     let tween = {
-        opacity: o,
         size: s,
         time: speed,
         transition: 'easeOutQuad',
@@ -61,7 +59,7 @@ function fade(o, s, onUpdate, onComplete)
  */
 function fadeIn(onUpdate, onComplete)
 {
-    fade(255, max, onUpdate, onComplete);
+    fade(max, onUpdate, onComplete);
 }
 
 /**
@@ -72,7 +70,7 @@ function fadeIn(onUpdate, onComplete)
  */
 function fadeOut(onUpdate, onComplete)
 {
-    fade(0, min, onUpdate, onComplete);
+    fade(min, onUpdate, onComplete);
 }
 
 /**
@@ -88,16 +86,6 @@ function getCursor()
     }
 
     return cursor;
-}
-
-/**
- * Get cursor opacity.
- * 
- * @return {Number} cursor opacity
- */
-function getOpacity()
-{
-    return target.opacity;
 }
 
 /**
