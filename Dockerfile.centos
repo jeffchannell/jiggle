@@ -7,4 +7,4 @@ RUN dbus-uuidgen > /var/lib/dbus/machine-id \
  && mkdir -p /home/jiggle/.local/share/gnome-shell/extensions/jiggle@jeffchannell.com
 WORKDIR /home/jiggle/.local/share/gnome-shell/extensions/jiggle@jeffchannell.com
 COPY . .
-ENTRYPOINT [ "./dockertest.sh" ]
+ENTRYPOINT [ "./entrypoint.sh" ]

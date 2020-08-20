@@ -10,4 +10,4 @@ RUN useradd -ms /bin/bash jiggle \
  && rm -rf /var/lib/apt/lists*
 WORKDIR /home/jiggle/.local/share/gnome-shell/extensions/jiggle@jeffchannell.com
 COPY . .
-ENTRYPOINT [ "./dockertest.sh" ]
+ENTRYPOINT [ "./entrypoint.sh" ]
