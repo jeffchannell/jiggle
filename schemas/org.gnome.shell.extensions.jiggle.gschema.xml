@@ -7,7 +7,7 @@
             <default>0.4</default>
         </key>
         <key name="shake-threshold" type="i">
-            <default>300</default>
+            <default>160</default>
         </key>
     </schema>
 </schemalist>
