@@ -4,6 +4,7 @@ JIGGLE_VERSION ?= latest
 
 build:
 	@rm jiggle_${JIGGLE_VERSION}.zip 2> /dev/null || true
+	@glib-compile-schemas schemas/
 	@zip -r jiggle_${JIGGLE_VERSION}.zip \
 		schemas/ \
 		cursor.js \

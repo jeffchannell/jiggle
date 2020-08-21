@@ -6,6 +6,9 @@
         <key name="growth-speed" type="d">
             <default>0.4</default>
         </key>
+        <key name="shrink-speed" type="d">
+            <default>0.25</default>
+        </key>
         <key name="shake-threshold" type="i">
             <default>300</default>
         </key>

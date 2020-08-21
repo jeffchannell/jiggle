@@ -15,7 +15,8 @@ try {
 
 const Gdk = imports.gi.Gdk;
 
-var speed = 0.4;
+var growthSpeed = 0.4;
+var shrinkSpeed = 0.4;
 var min;
 try {
     min = getCursor().get_image().get_width();
@@ -30,15 +31,17 @@ let target = {size: min};
  * Fade the cursor target.
  * 
  * @param {Number} s size
+ * @param {Number} speed fade speed
+ * @param {String} transition transition type
  * @param {Function} onUpdate update callback
  * @param {Function} onComplete complete callback
  */
-function fade(s, onUpdate, onComplete)
+function fade(s, speed, transition, onUpdate, onComplete)
 {
     let tween = {
         size: s,
         time: speed,
-        transition: 'easeOutQuad',
+        transition: transition,
         onUpdate: onUpdate
     };
 
@@ -59,7 +62,7 @@ function fade(s, onUpdate, onComplete)
  */
 function fadeIn(onUpdate, onComplete)
 {
-    fade(max, onUpdate, onComplete);
+    fade(max, growthSpeed, 'easeOutQuad', onUpdate, onComplete);
 }
 
 /**
@@ -70,7 +73,7 @@ function fadeIn(onUpdate, onComplete)
  */
 function fadeOut(onUpdate, onComplete)
 {
-    fade(min, onUpdate, onComplete);
+    fade(min, shrinkSpeed, 'easeInQuad', onUpdate, onComplete);
 }
 
 /**
