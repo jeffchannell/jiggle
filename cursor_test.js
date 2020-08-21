@@ -16,7 +16,7 @@ suite.addTest("fade", function() {
     });
 });
 
-suite.addTest("getCursorImage", function() {
+suite.addTest("getCursor", function() {
     let cursor = imports.cursor.getCursor();
 
     gjsunit.assertEquals('object', typeof cursor);

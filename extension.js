@@ -32,6 +32,7 @@ let xhot;
 let yhot;
 
 let growthSpeedID;
+let shrinkSpeedID;
 let shakeThresholdID;
 
 function getCursor()
@@ -84,10 +85,16 @@ function enable()
 
     // sync settings
     let growthSpeedFetch = function () {
-        JCursor.speed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
+        JCursor.growthSpeed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
     };
     growthSpeedFetch();
     growthSpeedID = settings.connect('changed::growth-speed', growthSpeedFetch);
+
+    let shrinkSpeedFetch = function () {
+        JCursor.shrinkSpeed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('shrink-speed').deep_unpack())));
+    };
+    shrinkSpeedFetch();
+    shrinkSpeedID = settings.connect('changed::shrink-speed', shrinkSpeedFetch);
 
     let shakeThresholdFetch = function () {
         JHistory.threshold = Math.max(10, Math.min(500, parseInt(settings.get_value('shake-threshold').deep_unpack(), 10)));
