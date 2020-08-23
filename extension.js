@@ -18,6 +18,7 @@ const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
 const JCursor = Me.imports.cursor;
 const JHistory = Me.imports.history;
 const JSettings = Me.imports.settings;
+const JWindow = Me.imports.window;
 
 const INTERVAL_MS = 10;
 
@@ -28,6 +29,7 @@ let pointerImage;
 let pointerInterval;
 let pointerListener;
 let settings;
+let window;
 let xhot;
 let yhot;
 
@@ -74,6 +76,11 @@ function disable()
     settings.disconnect(growthSpeedID);
     settings.disconnect(shakeThresholdID);
     settings = null;
+
+    if (window) {
+        window.close();
+        window = null;
+    }
 }
 
 /**
@@ -101,6 +108,8 @@ function enable()
     };
     shakeThresholdFetch();
     shakeThresholdID = settings.connect('changed::shake-threshold', shakeThresholdFetch);
+
+    window = JWindow.getWindow();
 
     // start the listeners
     pointerListener = PointerWatcher.addWatch(INTERVAL_MS, mouseMove);
@@ -166,7 +175,7 @@ function removeInterval()
 }
 
 function start()
-{   
+{
     if (!pointerIcon) {
         pointerIcon = getCursor();
         Main.uiGroup.add_actor(pointerIcon);
@@ -175,11 +184,13 @@ function start()
     pointerIcon.set_position(JHistory.lastX, JHistory.lastY);
 
     JCursor.fadeIn(onUpdate, null);
+    window.show();
 }
 
 function stop()
 {
     JCursor.fadeOut(onUpdate, function () {
+        window.hide();
         if (pointerIcon) {
             Main.uiGroup.remove_actor(pointerIcon);
             pointerIcon = null;
