@@ -77,10 +77,7 @@ function disable()
     settings.disconnect(shakeThresholdID);
     settings = null;
 
-    if (window) {
-        window.close();
-        window = null;
-    }
+    JWindow.close();
 }
 
 /**

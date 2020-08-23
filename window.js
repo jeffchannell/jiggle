@@ -29,18 +29,14 @@ const CursorGrabWindow = GObject.registerClass(class CursorGrabWindow extends Gt
         this.set_skip_taskbar_hint(true);
         this.get_window().set_cursor(Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'none'));
         this.hide();
-        this._mainloop(this);
-    }
-    
-    _mainloop($) {
-        if ($) {
-            $.add_tick_callback($._mainloop);
-        }
     }
 });
 
 function close() {
-    if (window) window.close
+    if (window) {
+        window.close();
+        window = null;
+    }
 }
 
 function getWindow()
