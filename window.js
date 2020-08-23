@@ -8,14 +8,11 @@ let window;
 
 const CursorGrabWindow = GObject.registerClass(class CursorGrabWindow extends Gtk.Window {
     _init() {
-        super._init({title: "test"});
-
-        this._size = 100;
-        this._bus_id = 
+        super._init({title: "Jiggle"});
 
         // initialize window
         this.set_events(Gdk.EventType.DELETE);
-        this.set_title('Test');
+        this.set_title('Jiggle');
         this.set_default_size(32765, 32765);
         this.set_app_paintable(true);
         this.set_decorated(false);

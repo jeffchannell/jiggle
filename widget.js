@@ -49,6 +49,13 @@ function label(text)
     return new Gtk.Label(options);
 }
 
+/**
+ * Get a Switch widget (named "toggle" because switch is reserved).
+ * 
+ * @param {Boolean} value
+ * 
+ * @return {imports.gi.Gtk.Switch} Switch widget
+ */
 function toggle(value)
 {
     let options = {

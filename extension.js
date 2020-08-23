@@ -116,7 +116,9 @@ function enable()
     shakeThresholdFetch();
     shakeThresholdID = settings.connect('changed::shake-threshold', shakeThresholdFetch);
 
-    window = JWindow.getWindow();
+    if (hideOriginal) {
+        window = JWindow.getWindow();
+    }
 
     // start the listeners
     pointerListener = PointerWatcher.addWatch(INTERVAL_MS, mouseMove);
