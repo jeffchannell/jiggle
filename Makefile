@@ -2,9 +2,8 @@
 
 JIGGLE_VERSION ?= latest
 
-build:
+build: compile
 	@rm jiggle_${JIGGLE_VERSION}.zip 2> /dev/null || true
-	@glib-compile-schemas schemas/
 	@zip -r jiggle_${JIGGLE_VERSION}.zip \
 		schemas/ \
 		cursor.js \
@@ -18,10 +17,14 @@ build:
 		stylesheet.css \
 		widget.js
 
-test:
+test: compile
 	@./test.js
 
-docker:
+docker: compile
 	@./dockertest.sh
+
+compile:
+	@echo "compiling schemas"
+	@glib-compile-schemas schemas/
 
 all: test build

@@ -18,9 +18,11 @@ const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
 const JCursor = Me.imports.cursor;
 const JHistory = Me.imports.history;
 const JSettings = Me.imports.settings;
+const JWindow = Me.imports.window;
 
 const INTERVAL_MS = 10;
 
+let hideOriginal;
 let jiggling = false;
 let cursor;
 let pointerIcon;
@@ -28,9 +30,11 @@ let pointerImage;
 let pointerInterval;
 let pointerListener;
 let settings;
+let window;
 let xhot;
 let yhot;
 
+let hideOriginalID;
 let growthSpeedID;
 let shrinkSpeedID;
 let shakeThresholdID;
@@ -71,9 +75,13 @@ function disable()
     // stop the interval
     removeInterval();
     // disconnect from the settings
+    settings.disconnect(hideOriginalID);
     settings.disconnect(growthSpeedID);
+    settings.disconnect(shrinkSpeedID);
     settings.disconnect(shakeThresholdID);
     settings = null;
+
+    JWindow.close();
 }
 
 /**
@@ -84,6 +92,12 @@ function enable()
     settings = JSettings.settings();
 
     // sync settings
+    let hideOriginalFetch = function () {
+        hideOriginal = settings.get_value('hide-original').deep_unpack();
+    };
+    hideOriginalFetch();
+    hideOriginalID = settings.connect('changed::hide-original', hideOriginalFetch);
+
     let growthSpeedFetch = function () {
         JCursor.growthSpeed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
     };
@@ -101,6 +115,10 @@ function enable()
     };
     shakeThresholdFetch();
     shakeThresholdID = settings.connect('changed::shake-threshold', shakeThresholdFetch);
+
+    if (hideOriginal) {
+        window = JWindow.getWindow();
+    }
 
     // start the listeners
     pointerListener = PointerWatcher.addWatch(INTERVAL_MS, mouseMove);
@@ -166,7 +184,7 @@ function removeInterval()
 }
 
 function start()
-{   
+{
     if (!pointerIcon) {
         pointerIcon = getCursor();
         Main.uiGroup.add_actor(pointerIcon);
@@ -175,11 +193,17 @@ function start()
     pointerIcon.set_position(JHistory.lastX, JHistory.lastY);
 
     JCursor.fadeIn(onUpdate, null);
+    if (hideOriginal) {
+        window.show();
+    }
 }
 
 function stop()
 {
     JCursor.fadeOut(onUpdate, function () {
+        if (hideOriginal) {
+            window.hide();
+        }
         if (pointerIcon) {
             Main.uiGroup.remove_actor(pointerIcon);
             pointerIcon = null;
