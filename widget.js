@@ -43,8 +43,19 @@ function label(text)
         label: text,
         halign: Gtk.Align.START,
         use_markup: true,
-        visible: true
+        visible: true,
     };
 
     return new Gtk.Label(options);
+}
+
+function toggle(value)
+{
+    let options = {
+        active: value,
+        state: value,
+        visible: true,
+    };
+
+    return new Gtk.Switch(options);
 }

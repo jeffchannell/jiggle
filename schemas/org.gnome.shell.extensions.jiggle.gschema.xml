@@ -3,6 +3,9 @@
 <schemalist>
     <schema id="org.gnome.shell.extensions.jiggle" path="/org/gnome/shell/extensions/jiggle/">
         <!-- See also: https://developer.gnome.org/glib/stable/gvariant-format-strings.html -->
+        <key name="hide-original" type="b">
+            <default>true</default>
+        </key>
         <key name="growth-speed" type="d">
             <default>0.4</default>
         </key>
