@@ -15,7 +15,8 @@ build: compile
 		prefs.js \
 		settings.js \
 		stylesheet.css \
-		widget.js
+		widget.js \
+		window.js
 
 test: compile
 	@./test.js
