@@ -32,7 +32,6 @@ let pointerInterval;
 let pointerListener;
 let settings;
 let useSystem;
-let window;
 let xhot;
 let yhot;
 
@@ -54,7 +53,7 @@ function getCursor()
     } catch (err) {}
 
     if (!pointerImage) {
-        pointerImage = useSystem ? cursor.get_image() : Gio.icon_new_for_string(Me.path + "/cursor.png");
+        pointerImage = useSystem ? cursor.get_image() : Gio.icon_new_for_string(Me.path + "/icons/jiggle-cursor.png");
     }
 
     return new St.Icon({
@@ -122,7 +121,7 @@ function enable()
     useSystem = settings.get_value('use-system').deep_unpack();
 
     if (hideOriginal) {
-        window = JWindow.getWindow();
+        JWindow.getWindow();
     }
 
     // start the listeners
@@ -199,7 +198,7 @@ function start()
 
     JCursor.fadeIn(onUpdate, null);
     if (hideOriginal) {
-        window.show();
+        JWindow.show();
     }
 }
 
@@ -207,7 +206,7 @@ function stop()
 {
     JCursor.fadeOut(onUpdate, function () {
         if (hideOriginal) {
-            window.hide();
+            JWindow.hide();
         }
         if (pointerIcon) {
             Main.uiGroup.remove_actor(pointerIcon);

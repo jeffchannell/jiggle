@@ -25,6 +25,7 @@ const CursorGrabWindow = GObject.registerClass(class CursorGrabWindow extends Gt
         this.set_skip_pager_hint(true);
         this.set_skip_taskbar_hint(true);
         this.get_window().set_cursor(Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'none'));
+        this.set_keep_above(false);
         this.hide();
     }
 });
@@ -45,4 +46,20 @@ function getWindow()
     }
 
     return window;
+}
+
+function hide()
+{
+    if (window) {
+        window.set_keep_above(false);
+        window.hide();
+    }
+}
+
+function show()
+{
+    if (window) {
+        window.set_keep_above(true);
+        window.show();
+    }
 }
