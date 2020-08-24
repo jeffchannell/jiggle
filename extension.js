@@ -32,7 +32,6 @@ let pointerInterval;
 let pointerListener;
 let settings;
 let useSystem;
-let usedSystem;
 let window;
 let xhot;
 let yhot;
