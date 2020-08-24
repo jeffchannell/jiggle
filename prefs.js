@@ -34,6 +34,19 @@ function buildPrefsWidget() {
     grid.attach(JWidget.label(title), 0, y, 2, 1);
 
     // Create a label for hide original
+    grid.attach(JWidget.label('Use System Cursor'), 0, ++y, 1, 1);
+
+    // Create a widget for hide original
+    let useSystem = JWidget.toggle(settings.get_value('use-system').deep_unpack());
+    grid.attach(useSystem, 1, y, 1, 1);
+
+    // connect the change event
+    useSystem.connect('state-set', (widget, state) => {
+        settings.set_boolean('use-system', state);
+        widget.set_active(state);
+    });
+
+    // Create a label for hide original
     grid.attach(JWidget.label('Hide Original Cursor'), 0, ++y, 1, 1);
 
     // Create a widget for hide original

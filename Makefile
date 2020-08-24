@@ -6,6 +6,7 @@ build: compile
 	@rm jiggle_${JIGGLE_VERSION}.zip 2> /dev/null || true
 	@zip -r jiggle_${JIGGLE_VERSION}.zip \
 		schemas/ \
+		cursor.png \
 		cursor.js \
 		extension.js \
 		history.js \

@@ -8,6 +8,7 @@
  * Heavily influenced by https://github.com/davidgodzsak/mouse-shake.js
  */
 
+const Gio = imports.gi.Gio;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
@@ -30,6 +31,7 @@ let pointerImage;
 let pointerInterval;
 let pointerListener;
 let settings;
+let useSystem;
 let window;
 let xhot;
 let yhot;
@@ -45,18 +47,18 @@ function getCursor()
         cursor = JCursor.getCursor();
     }
 
-    if (!pointerImage) {
-        pointerImage = cursor.get_image();
-    }
-
     try {
-        let s = cursor.get_surface();
-        xhot = s[2];
-        yhot = s[1];
+        let surface = cursor.get_surface();
+        xhot = surface[2];
+        yhot = surface[1];
     } catch (err) {}
 
+    if (!pointerImage) {
+        pointerImage = useSystem ? cursor.get_image() : Gio.icon_new_for_string(Me.path + "/cursor.png");
+    }
+
     return new St.Icon({
-        gicon: pointerImage
+        gicon: pointerImage,
     });
 }
 
@@ -115,6 +117,9 @@ function enable()
     };
     shakeThresholdFetch();
     shakeThresholdID = settings.connect('changed::shake-threshold', shakeThresholdFetch);
+
+    // we only check this on start
+    useSystem = settings.get_value('use-system').deep_unpack();
 
     if (hideOriginal) {
         window = JWindow.getWindow();

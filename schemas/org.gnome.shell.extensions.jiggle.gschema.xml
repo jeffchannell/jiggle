@@ -6,6 +6,9 @@
         <key name="hide-original" type="b">
             <default>true</default>
         </key>
+        <key name="use-system" type="b">
+            <default>false</default>
+        </key>
         <key name="growth-speed" type="d">
             <default>0.4</default>
         </key>
