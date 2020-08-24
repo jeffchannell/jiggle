@@ -15,8 +15,8 @@ try {
 
 const Gdk = imports.gi.Gdk;
 
-var growthSpeed = 0.4;
-var shrinkSpeed = 0.4;
+var growthSpeed = 0.25;
+var shrinkSpeed = 0.15;
 var min;
 try {
     min = getCursor().get_image().get_width();

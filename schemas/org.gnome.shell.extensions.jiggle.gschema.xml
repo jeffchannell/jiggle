@@ -10,10 +10,10 @@
             <default>false</default>
         </key>
         <key name="growth-speed" type="d">
-            <default>0.4</default>
+            <default>0.25</default>
         </key>
         <key name="shrink-speed" type="d">
-            <default>0.25</default>
+            <default>0.15</default>
         </key>
         <key name="shake-threshold" type="i">
             <default>200</default>
