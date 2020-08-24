@@ -21,7 +21,7 @@ var min;
 try {
     min = getCursor().get_image().get_width();
 } catch (err) {
-    min = 32;
+    min = 24;
 }
 var max = min * 3;
 
