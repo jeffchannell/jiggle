@@ -45,6 +45,8 @@ const CursorGrabWindow = GObject.registerClass(class CursorGrabWindow extends Gt
 
     move_to_pointer($, clock, data) {
         if ($.is_moving) {
+            $.unmaximize();
+            $.unfullscreen();
             let pos = $.get_display().get_default_seat().get_pointer().get_position();
             $.move(Math.max(0, pos[1]-960), Math.max(0, pos[2]-540));
         }
