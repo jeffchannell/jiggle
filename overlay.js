@@ -14,20 +14,21 @@ const CursorGrabWindow = GObject.registerClass(class CursorGrabWindow extends Gt
         this.is_moving = false;
 
         // initialize window
-        this.set_events(Gdk.EventType.DELETE);
         this.set_title('Jiggle');
-        this.set_default_size(1920, 1080);
+        this.set_default_size(1024, 768);
         this.set_app_paintable(true);
+        this.set_visual(this.get_screen().get_rgba_visual());
         this.set_decorated(false);
-        this.move(0, 0);
-        this.show();
-        this.set_resizable(false);
-        this.set_keep_above(true);
-        this.set_opacity(0);
+        this.set_urgency_hint(false);
         this.set_accept_focus(false);
         this.set_focus_on_map(false);
         this.set_skip_pager_hint(true);
         this.set_skip_taskbar_hint(true);
+        this.move(0, 0);
+        this.show();
+        this.set_resizable(false);
+        this.set_keep_above(true);
+        this.set_opacity(0); // left in for compat?
         this.get_window().set_cursor(Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'none'));
         this.hide();
         this.move_to_pointer(this, null, null);
@@ -48,7 +49,7 @@ const CursorGrabWindow = GObject.registerClass(class CursorGrabWindow extends Gt
             $.unmaximize();
             $.unfullscreen();
             let pos = $.get_display().get_default_seat().get_pointer().get_position();
-            $.move(Math.max(0, pos[1]-960), Math.max(0, pos[2]-540));
+            $.move(Math.max(0, pos[1]-512), Math.max(0, pos[2]-384));
         }
         $.add_tick_callback($.move_to_pointer);
     }
