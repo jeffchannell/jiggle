@@ -19,7 +19,7 @@ const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
 const JCursor = Me.imports.cursor;
 const JHistory = Me.imports.history;
 const JSettings = Me.imports.settings;
-const JWindow = Me.imports.window;
+const JSocket = Me.imports.socket;
 
 const INTERVAL_MS = 10;
 
@@ -82,7 +82,7 @@ function disable()
     settings.disconnect(shakeThresholdID);
     settings = null;
 
-    JWindow.close();
+    JSocket.send(JSocket.KILL);
 }
 
 /**
@@ -90,6 +90,8 @@ function disable()
  */
 function enable()
 {
+    JSocket.send(JSocket.KILL);
+
     settings = JSettings.settings();
 
     // sync settings
@@ -120,10 +122,6 @@ function enable()
     // we only check this on start
     useSystem = settings.get_value('use-system').deep_unpack();
 
-    if (hideOriginal) {
-        JWindow.getWindow();
-    }
-
     // start the listeners
     pointerListener = PointerWatcher.addWatch(INTERVAL_MS, mouseMove);
     main();
@@ -134,6 +132,7 @@ function enable()
  */
 function init()
 {
+    JSocket.send(JSocket.KILL);
 }
 
 /**
@@ -198,7 +197,9 @@ function start()
 
     JCursor.fadeIn(onUpdate, null);
     if (hideOriginal) {
-        JWindow.show();
+        if (JSocket.connect()) {
+            JSocket.send(JSocket.SHOW);
+        }
     }
 }
 
@@ -206,7 +207,9 @@ function stop()
 {
     JCursor.fadeOut(onUpdate, function () {
         if (hideOriginal) {
-            JWindow.hide();
+            if (JSocket.connect()) {
+                JSocket.send(JSocket.HIDE);
+            }
         }
         if (pointerIcon) {
             Main.uiGroup.remove_actor(pointerIcon);

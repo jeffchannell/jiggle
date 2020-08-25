@@ -14,11 +14,12 @@ build: compile
 		LICENSE.txt \
 		math.js \
 		metadata.json \
+		overlay.js \
 		prefs.js \
 		settings.js \
+		socket.js \
 		stylesheet.css \
-		widget.js \
-		window.js
+		widget.js
 
 test: compile
 	@./test.js
