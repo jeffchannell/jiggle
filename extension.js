@@ -8,6 +8,7 @@
  * Heavily influenced by https://github.com/davidgodzsak/mouse-shake.js
  */
 
+const Gio = imports.gi.Gio;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
@@ -18,27 +19,45 @@ const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
 const JCursor = Me.imports.cursor;
 const JHistory = Me.imports.history;
 const JSettings = Me.imports.settings;
+const JSocket = Me.imports.socket;
 
 const INTERVAL_MS = 10;
 
+let hideOriginal;
 let jiggling = false;
+let cursor;
 let pointerIcon;
 let pointerImage;
 let pointerInterval;
 let pointerListener;
 let settings;
+let useSystem;
+let xhot;
+let yhot;
 
+let hideOriginalID;
 let growthSpeedID;
+let shrinkSpeedID;
 let shakeThresholdID;
 
 function getCursor()
 {
+    if (!cursor) {
+        cursor = JCursor.getCursor();
+    }
+
+    try {
+        let surface = cursor.get_surface();
+        xhot = surface[2];
+        yhot = surface[1];
+    } catch (err) {}
+
     if (!pointerImage) {
-        pointerImage = JCursor.getCursor().get_image();
+        pointerImage = useSystem ? cursor.get_image() : Gio.icon_new_for_string(Me.path + "/icons/jiggle-cursor.png");
     }
 
     return new St.Icon({
-        gicon: pointerImage
+        gicon: pointerImage,
     });
 }
 
@@ -57,9 +76,13 @@ function disable()
     // stop the interval
     removeInterval();
     // disconnect from the settings
+    settings.disconnect(hideOriginalID);
     settings.disconnect(growthSpeedID);
+    settings.disconnect(shrinkSpeedID);
     settings.disconnect(shakeThresholdID);
     settings = null;
+
+    JSocket.send(JSocket.KILL);
 }
 
 /**
@@ -67,20 +90,37 @@ function disable()
  */
 function enable()
 {
+    JSocket.send(JSocket.KILL);
+
     settings = JSettings.settings();
 
     // sync settings
+    let hideOriginalFetch = function () {
+        hideOriginal = settings.get_value('hide-original').deep_unpack();
+    };
+    hideOriginalFetch();
+    hideOriginalID = settings.connect('changed::hide-original', hideOriginalFetch);
+
     let growthSpeedFetch = function () {
-        JCursor.speed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
+        JCursor.growthSpeed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
     };
     growthSpeedFetch();
     growthSpeedID = settings.connect('changed::growth-speed', growthSpeedFetch);
+
+    let shrinkSpeedFetch = function () {
+        JCursor.shrinkSpeed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('shrink-speed').deep_unpack())));
+    };
+    shrinkSpeedFetch();
+    shrinkSpeedID = settings.connect('changed::shrink-speed', shrinkSpeedFetch);
 
     let shakeThresholdFetch = function () {
         JHistory.threshold = Math.max(10, Math.min(500, parseInt(settings.get_value('shake-threshold').deep_unpack(), 10)));
     };
     shakeThresholdFetch();
     shakeThresholdID = settings.connect('changed::shake-threshold', shakeThresholdFetch);
+
+    // we only check this on start
+    useSystem = settings.get_value('use-system').deep_unpack();
 
     // start the listeners
     pointerListener = PointerWatcher.addWatch(INTERVAL_MS, mouseMove);
@@ -92,6 +132,7 @@ function enable()
  */
 function init()
 {
+    JSocket.send(JSocket.KILL);
 }
 
 /**
@@ -127,9 +168,13 @@ function mouseMove(x, y)
 
 function onUpdate() {
     if (pointerIcon) {
-        pointerIcon.opacity = JCursor.getOpacity();
-        pointerIcon.set_icon_size(JCursor.getSize());
-        pointerIcon.set_position(JHistory.lastX - pointerIcon.width / 2, JHistory.lastY - pointerIcon.height / 2);
+        let s = JCursor.getSize();
+        let r = s / JCursor.min;
+        pointerIcon.set_icon_size(s);
+        pointerIcon.set_position(
+            (JHistory.lastX - pointerIcon.width / 2) + (xhot * r),
+            (JHistory.lastY - pointerIcon.height / 2) + (yhot * r)
+        );
     }
 }
 
@@ -142,13 +187,18 @@ function removeInterval()
 }
 
 function start()
-{   
+{
+    if (hideOriginal) {
+        if (JSocket.connect()) {
+            JSocket.send(JSocket.SHOW);
+        }
+    }
+
     if (!pointerIcon) {
         pointerIcon = getCursor();
         Main.uiGroup.add_actor(pointerIcon);
     }
 
-    pointerIcon.opacity = JCursor.getOpacity();
     pointerIcon.set_position(JHistory.lastX, JHistory.lastY);
 
     JCursor.fadeIn(onUpdate, null);
@@ -157,6 +207,11 @@ function start()
 function stop()
 {
     JCursor.fadeOut(onUpdate, function () {
+        if (hideOriginal) {
+            if (JSocket.connect()) {
+                JSocket.send(JSocket.HIDE);
+            }
+        }
         if (pointerIcon) {
             Main.uiGroup.remove_actor(pointerIcon);
             pointerIcon = null;

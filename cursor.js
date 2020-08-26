@@ -15,32 +15,33 @@ try {
 
 const Gdk = imports.gi.Gdk;
 
-var speed = 0.4;
+var growthSpeed = 0.25;
+var shrinkSpeed = 0.15;
 var min;
 try {
     min = getCursor().get_image().get_width();
 } catch (err) {
-    min = 32;
+    min = 24;
 }
 var max = min * 3;
 
-let target = {opacity: 0, size: min};
+let target = {size: min};
 
 /**
  * Fade the cursor target.
  * 
- * @param {Number} o opacity
  * @param {Number} s size
+ * @param {Number} speed fade speed
+ * @param {String} transition transition type
  * @param {Function} onUpdate update callback
  * @param {Function} onComplete complete callback
  */
-function fade(o, s, onUpdate, onComplete)
+function fade(s, speed, transition, onUpdate, onComplete)
 {
     let tween = {
-        opacity: o,
         size: s,
         time: speed,
-        transition: 'easeOutQuad',
+        transition: transition,
         onUpdate: onUpdate
     };
 
@@ -61,7 +62,7 @@ function fade(o, s, onUpdate, onComplete)
  */
 function fadeIn(onUpdate, onComplete)
 {
-    fade(255, max, onUpdate, onComplete);
+    fade(max, growthSpeed, 'easeOutQuad', onUpdate, onComplete);
 }
 
 /**
@@ -72,7 +73,7 @@ function fadeIn(onUpdate, onComplete)
  */
 function fadeOut(onUpdate, onComplete)
 {
-    fade(0, min, onUpdate, onComplete);
+    fade(min, shrinkSpeed, 'easeInQuad', onUpdate, onComplete);
 }
 
 /**
@@ -88,16 +89,6 @@ function getCursor()
     }
 
     return cursor;
-}
-
-/**
- * Get cursor opacity.
- * 
- * @return {Number} cursor opacity
- */
-function getOpacity()
-{
-    return target.opacity;
 }
 
 /**

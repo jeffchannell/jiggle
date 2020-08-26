@@ -2,6 +2,8 @@
 
 Jiggle is a Gnome Shell extension that highlights the cursor position when the mouse is moved rapidly.
 
+![GIF of mouse cursor growing as it is shaken](https://github.com/jeffchannell/jiggle/blob/master/screenshot.gif?raw=true)
+
 ## Building
 
 ```bash

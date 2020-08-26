@@ -12,44 +12,55 @@ let settings;
 
 // Like `extension.js` this is used for any one-time setup like translations.
 function init() {
+    settings = JSettings.settings();
 }
-
 
 // This function is called when the preferences window is first created to build and return a Gtk widget.
 function buildPrefsWidget() {
-    settings = JSettings.settings();
-
-    // Create a parent widget that we'll return from this function
-    let grid = new Gtk.Grid({
-        margin: 18,
-        column_spacing: 12,
-        row_spacing: 12,
-        visible: true
+    let frame = new Gtk.Box({
+        orientation: Gtk.Orientation.VERTICAL,
+        border_width: 10,
+        spacing: 10,
     });
 
-    // Add a simple title and add it to the grid
-    let title = '<b>' + Me.metadata.name + ' version ' + Me.metadata.version + ' Extension Preferences</b>';
-    grid.attach(JWidget.label(title), 0, 0, 2, 1);
+    frame.add(buildSwitcher('use-system', 'Use System Cursor'));
+    frame.add(buildSwitcher('hide-original', 'Hide Original Cursor'));
+    frame.add(buildHScale('growth-speed', 'Growth Speed', 2, 0.1, 1.0));
+    frame.add(buildHScale('shrink-speed', 'Shrink Speed', 2, 0.1, 1.0));
+    frame.add(buildHScale('shake-threshold', 'Shake Threshold', 0, 10, 500));
+    frame.show_all();
 
-    // Create a label for growth speed
-    grid.attach(JWidget.label('Growth Speed'), 0, 1, 1, 1);
+    return frame;
+}
 
-    // Create a widget for growth speed
-    let growth = JWidget.hscale(2, 0.1, 1.0, settings.get_value('growth-speed').deep_unpack());
-    grid.attach(growth, 1, 1, 20, 1);
+function buildHScale(key, labelText, digits, min, max) {
+    let hscale = JWidget.hscale(digits, min, max, settings.get_value(key).deep_unpack());
+    hscale.connect('value-changed', (widget) => settings.set_int(key, widget.get_value()));
 
-    // connect the change event
-    growth.connect('value-changed', (widget) => settings.set_double('growth-speed', widget.get_value()));
+    return newHBox(labelText, hscale, true);
+}
 
-    // Create a label for shake threshold
-    grid.attach(JWidget.label('Shake Threshold'), 0, 2, 1, 1);
+function buildSwitcher(key, labelText) {
+    let switcher = JWidget.switcher(settings.get_value(key).deep_unpack());
+    switcher.connect('state-set', (widget, state) => {
+        settings.set_boolean(key, state);
+        widget.set_active(state);
+    });
 
-    // Create a widget for shake threshold
-    let shake = JWidget.hscale(0, 10, 500, settings.get_value('shake-threshold').deep_unpack());
-    grid.attach(shake, 1, 2, 20, 1);
+    return newHBox(labelText, switcher, false);
+}
 
-    // connect the change event
-    shake.connect('value-changed', (widget) => settings.set_int('shake-threshold', widget.get_value()));
+function newHBox(labelText, widget, stretch)
+{
+    let hbox = new Gtk.Box({
+        orientation: Gtk.Orientation.HORIZONTAL,
+        spacing: 10,
+        homogeneous: stretch,
+    });
+    let label = JWidget.label(labelText)
 
-    return grid;
+    hbox.pack_start(label, true, true, 0);
+    hbox.add(widget);
+
+    return hbox;
 }

@@ -3,11 +3,20 @@
 <schemalist>
     <schema id="org.gnome.shell.extensions.jiggle" path="/org/gnome/shell/extensions/jiggle/">
         <!-- See also: https://developer.gnome.org/glib/stable/gvariant-format-strings.html -->
+        <key name="hide-original" type="b">
+            <default>true</default>
+        </key>
+        <key name="use-system" type="b">
+            <default>false</default>
+        </key>
         <key name="growth-speed" type="d">
-            <default>0.4</default>
+            <default>0.25</default>
+        </key>
+        <key name="shrink-speed" type="d">
+            <default>0.15</default>
         </key>
         <key name="shake-threshold" type="i">
-            <default>300</default>
+            <default>200</default>
         </key>
     </schema>
 </schemalist>
