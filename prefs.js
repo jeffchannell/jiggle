@@ -12,82 +12,55 @@ let settings;
 
 // Like `extension.js` this is used for any one-time setup like translations.
 function init() {
+    settings = JSettings.settings();
 }
-
 
 // This function is called when the preferences window is first created to build and return a Gtk widget.
 function buildPrefsWidget() {
-    settings = JSettings.settings();
-
-    // Create a parent widget that we'll return from this function
-    let grid = new Gtk.Grid({
-        margin: 18,
-        column_spacing: 12,
-        row_spacing: 12,
-        visible: true
+    let frame = new Gtk.Box({
+        orientation: Gtk.Orientation.VERTICAL,
+        border_width: 10,
+        spacing: 10,
     });
 
-    let y = 0;
+    frame.add(buildSwitcher('use-system', 'Use System Cursor'));
+    frame.add(buildSwitcher('hide-original', 'Hide Original Cursor'));
+    frame.add(buildHScale('growth-speed', 'Growth Speed', 2, 0.1, 1.0));
+    frame.add(buildHScale('shrink-speed', 'Shrink Speed', 2, 0.1, 1.0));
+    frame.add(buildHScale('shake-threshold', 'Shake Threshold', 0, 10, 500));
+    frame.show_all();
 
-    // Add a simple title and add it to the grid
-    let title = '<b>' + Me.metadata.name + ' version ' + Me.metadata.version + ' Extension Preferences</b>';
-    grid.attach(JWidget.label(title), 0, y, 2, 1);
+    return frame;
+}
 
-    // Create a label for hide original
-    grid.attach(JWidget.label('Use System Cursor'), 0, ++y, 1, 1);
+function buildHScale(key, labelText, digits, min, max) {
+    let hscale = JWidget.hscale(digits, min, max, settings.get_value(key).deep_unpack());
+    hscale.connect('value-changed', (widget) => settings.set_int(key, widget.get_value()));
 
-    // Create a widget for hide original
-    let useSystem = JWidget.toggle(settings.get_value('use-system').deep_unpack());
-    grid.attach(useSystem, 1, y, 1, 1);
+    return newHBox(labelText, hscale, true);
+}
 
-    // connect the change event
-    useSystem.connect('state-set', (widget, state) => {
-        settings.set_boolean('use-system', state);
+function buildSwitcher(key, labelText) {
+    let switcher = JWidget.switcher(settings.get_value(key).deep_unpack());
+    switcher.connect('state-set', (widget, state) => {
+        settings.set_boolean(key, state);
         widget.set_active(state);
     });
 
-    // Create a label for hide original
-    grid.attach(JWidget.label('Hide Original Cursor'), 0, ++y, 1, 1);
+    return newHBox(labelText, switcher, false);
+}
 
-    // Create a widget for hide original
-    let hideOriginal = JWidget.toggle(settings.get_value('hide-original').deep_unpack());
-    grid.attach(hideOriginal, 1, y, 1, 1);
-
-    // connect the change event
-    hideOriginal.connect('state-set', (widget, state) => {
-        settings.set_boolean('hide-original', state);
-        widget.set_active(state);
+function newHBox(labelText, widget, stretch)
+{
+    let hbox = new Gtk.Box({
+        orientation: Gtk.Orientation.HORIZONTAL,
+        spacing: 10,
+        homogeneous: stretch,
     });
+    let label = JWidget.label(labelText)
 
-    // Create a label for growth speed
-    grid.attach(JWidget.label('Growth Speed'), 0, ++y, 1, 1);
+    hbox.pack_start(label, true, true, 0);
+    hbox.add(widget);
 
-    // Create a widget for growth speed
-    let growth = JWidget.hscale(2, 0.1, 1.0, settings.get_value('growth-speed').deep_unpack());
-    grid.attach(growth, 1, y, 20, 1);
-
-    // connect the change event
-    growth.connect('value-changed', (widget) => settings.set_double('growth-speed', widget.get_value()));
-
-    // Create a label for shrink speed
-    grid.attach(JWidget.label('Shrink Speed'), 0, ++y, 1, 1);
-
-    // Create a widget for shrink speed
-    let shrink = JWidget.hscale(2, 0.1, 1.0, settings.get_value('shrink-speed').deep_unpack());
-    grid.attach(shrink, 1, y, 20, 1);
-
-    // connect the change event
-    shrink.connect('value-changed', (widget) => settings.set_double('shrink-speed', widget.get_value()));
-
-    // Create a label for shake threshold
-    grid.attach(JWidget.label('Shake Threshold'), 0, ++y, 1, 1);
-
-    // Create a widget for shake threshold
-    let shake = JWidget.hscale(0, 10, 500, settings.get_value('shake-threshold').deep_unpack());
-    grid.attach(shake, 1, y, 20, 1);
-
-    // connect the change event
-    shake.connect('value-changed', (widget) => settings.set_int('shake-threshold', widget.get_value()));
-
-    return grid;
+    return hbox;
 }

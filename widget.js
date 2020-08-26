@@ -50,13 +50,13 @@ function label(text)
 }
 
 /**
- * Get a Switch widget (named "toggle" because switch is reserved).
+ * Get a Switch widget (named "switcher" because switch is reserved).
  * 
  * @param {Boolean} value
  * 
  * @return {imports.gi.Gtk.Switch} Switch widget
  */
-function toggle(value)
+function switcher(value)
 {
     let options = {
         active: value,
