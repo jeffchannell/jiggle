@@ -188,6 +188,12 @@ function removeInterval()
 
 function start()
 {
+    if (hideOriginal) {
+        if (JSocket.connect()) {
+            JSocket.send(JSocket.SHOW);
+        }
+    }
+
     if (!pointerIcon) {
         pointerIcon = getCursor();
         Main.uiGroup.add_actor(pointerIcon);
@@ -196,11 +202,6 @@ function start()
     pointerIcon.set_position(JHistory.lastX, JHistory.lastY);
 
     JCursor.fadeIn(onUpdate, null);
-    if (hideOriginal) {
-        if (JSocket.connect()) {
-            JSocket.send(JSocket.SHOW);
-        }
-    }
 }
 
 function stop()

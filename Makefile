@@ -11,6 +11,7 @@ build: compile
 		cursor.js \
 		extension.js \
 		history.js \
+		kill.js \
 		LICENSE.txt \
 		math.js \
 		metadata.json \
@@ -29,8 +30,25 @@ docker: compile
 
 local: compile
 	@echo "installing locally to ${JIGGLE_DEV_DIR}"
+	@rm -rvf "${JIGGLE_DEV_DIR}" || true
 	@mkdir -p "${JIGGLE_DEV_DIR}" || true
-	@cp -rv ./* "${JIGGLE_DEV_DIR}"
+	@cp -rv \
+		icons/ \
+		schemas/ \
+		cursor.js \
+		extension.js \
+		history.js \
+		kill.js \
+		LICENSE.txt \
+		math.js \
+		metadata.json \
+		overlay.js \
+		prefs.js \
+		settings.js \
+		socket.js \
+		stylesheet.css \
+		widget.js \
+		"${JIGGLE_DEV_DIR}"
 	@echo "Overwriting metadata"
 	@sed -e :a \
 		-e 's/jiggle@/jiggle-dev@/' \

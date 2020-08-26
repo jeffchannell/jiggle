@@ -4,8 +4,10 @@ const Gio = imports.gi.Gio;
 const GLib = imports.gi.GLib;
 const Mainloop = imports.mainloop;
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+let path = '.';
+if (!Gio.File.new_for_path('./overlay.js').query_exists(null)) {
+    path = imports.misc.extensionUtils.getCurrentExtension().path;
+}
 
 const socket_host = 'localhost';
 const socket_port = 10971;
@@ -18,7 +20,7 @@ var KILL = '9';
 function connect()
 {
     if (!send(PING)) {
-        GLib.spawn_async(Me.path, ['/usr/bin/gjs', 'overlay.js'], null, 0, null);
+        GLib.spawn_async(path, ['/usr/bin/gjs', 'overlay.js'], null, 0, null);
     }
 
     let attempts = 0;

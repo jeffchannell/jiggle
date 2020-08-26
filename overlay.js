@@ -21,7 +21,6 @@ const CursorGrabWindow = GObject.registerClass(class CursorGrabWindow extends Gt
         this.set_decorated(false);
         this.set_urgency_hint(false);
         this.set_accept_focus(false);
-        this.set_focus_on_map(false);
         this.set_skip_pager_hint(true);
         this.set_skip_taskbar_hint(true);
         this.move(0, 0);
