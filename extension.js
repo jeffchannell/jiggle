@@ -31,6 +31,7 @@ let pointerImage;
 let pointerInterval;
 let pointerListener;
 let settings;
+let settingsID;
 let useSystem;
 let xhot;
 let yhot;
@@ -76,10 +77,7 @@ function disable()
     // stop the interval
     removeInterval();
     // disconnect from the settings
-    settings.disconnect(hideOriginalID);
-    settings.disconnect(growthSpeedID);
-    settings.disconnect(shrinkSpeedID);
-    settings.disconnect(shakeThresholdID);
+    settings.disconnect(settingsID);
     settings = null;
 
     JSocket.send(JSocket.KILL);
@@ -93,34 +91,8 @@ function enable()
     JSocket.send(JSocket.KILL);
 
     settings = JSettings.settings();
-
-    // sync settings
-    let hideOriginalFetch = function () {
-        hideOriginal = settings.get_value('hide-original').deep_unpack();
-    };
-    hideOriginalFetch();
-    hideOriginalID = settings.connect('changed::hide-original', hideOriginalFetch);
-
-    let growthSpeedFetch = function () {
-        JCursor.growthSpeed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
-    };
-    growthSpeedFetch();
-    growthSpeedID = settings.connect('changed::growth-speed', growthSpeedFetch);
-
-    let shrinkSpeedFetch = function () {
-        JCursor.shrinkSpeed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('shrink-speed').deep_unpack())));
-    };
-    shrinkSpeedFetch();
-    shrinkSpeedID = settings.connect('changed::shrink-speed', shrinkSpeedFetch);
-
-    let shakeThresholdFetch = function () {
-        JHistory.threshold = Math.max(10, Math.min(500, parseInt(settings.get_value('shake-threshold').deep_unpack(), 10)));
-    };
-    shakeThresholdFetch();
-    shakeThresholdID = settings.connect('changed::shake-threshold', shakeThresholdFetch);
-
-    // we only check this on start
-    useSystem = settings.get_value('use-system').deep_unpack();
+    settingsID = settings.connect('changed', update);
+    update();
 
     // start the listeners
     pointerListener = PointerWatcher.addWatch(INTERVAL_MS, mouseMove);
@@ -217,4 +189,15 @@ function stop()
             pointerIcon = null;
         }
     });
+}
+
+function update()
+{
+    if (settings) {
+        hideOriginal = settings.get_value('hide-original').deep_unpack();
+        JCursor.growthSpeed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
+        JCursor.shrinkSpeed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('shrink-speed').deep_unpack())));
+        JHistory.threshold = Math.max(10, Math.min(500, parseInt(settings.get_value('shake-threshold').deep_unpack(), 10)));
+        useSystem = settings.get_value('use-system').deep_unpack();
+    }
 }
