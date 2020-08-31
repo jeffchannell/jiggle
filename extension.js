@@ -25,7 +25,7 @@ const INTERVAL_MS = 10;
 
 let currentFireworksTicLimit = 0;
 let fireworks = [];
-let fireworksTicLimit = 12; // number of tics we render a new firework
+let fireworksTicLimit = 18; // number of tics we render a new firework
 let hideOriginal;
 let jiggling = false;
 let cursor;
