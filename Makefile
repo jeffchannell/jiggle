@@ -18,7 +18,6 @@ build: compile
 		overlay.js \
 		prefs.js \
 		settings.js \
-		socket.js \
 		stylesheet.css \
 		widget.js
 
