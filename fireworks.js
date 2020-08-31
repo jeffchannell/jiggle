@@ -9,15 +9,16 @@ const Mainloop = imports.mainloop;
 
 var burstSpeed = 0.5; // between 0.5 and 2
 var sparkAmount = 50; // between 20 - 50
+var sparkTrail = 10;
 
 const Spark = class Spark {
     constructor(x, y, weight, r, g, b) {
-        this.x = x;
-        this.y = y;
-        this.weight = weight;
-        this.r = r
-        this.g = g;
-        this.b = b;
+        this.x = ((Math.random() > .5) ? -1 : 1) * (Math.random() * 5 + .5);
+        this.y = ((Math.random() > .5) ? -1 : 1) * (Math.random() * 5 + .5);
+        this.weight = Math.random() * .3 + .15;
+        this.r = Math.min(1, Math.floor(Math.random() * 2));
+        this.g = Math.min(1, Math.floor(Math.random() * 2));
+        this.b = Math.min(1, Math.floor(Math.random() * 2));
     }
 }
 
@@ -30,14 +31,7 @@ const FireworksDrawingArea = GObject.registerClass({
         this._age = 0;
         this._sparks = [];
         for (let i = 0; i < sparkAmount; i++) {
-            this._sparks.push(new Spark(
-                ((Math.random() > .5) ? -1 : 1) * (Math.random() * 5 + .5),
-                ((Math.random() > .5) ? -1 : 1) * (Math.random() * 5 + .5),
-                Math.random() * .3 + .03,
-                Math.min(1, Math.floor(Math.random() * 2)),
-                Math.min(1, Math.floor(Math.random() * 2)),
-                Math.min(1, Math.floor(Math.random() * 2))
-            ));
+            this._sparks.push(new Spark());
         }
 
         this.show();
@@ -64,13 +58,12 @@ const FireworksDrawingArea = GObject.registerClass({
         }
         for (let i = 0; i < this._sparks.length; i++) {
             let spark = this._sparks[i];
-            for (let j = 0; j < 10; j++) {
+            for (let j = 0; j < sparkTrail; j++) {
                 let trailAge = this._age + (j * burstSpeed);
                 let x = this.width/2 + spark.x * trailAge;
                 let y = this.height/2 + spark.y * trailAge + spark.weight * trailAge * spark.weight * trailAge;
                 let a = (j * 20 - this._age * 2) / 255;
                 context.setSourceRGBA(spark.r, spark.g, spark.b, a);
-                // context.moveTo(x, y);
                 context.rectangle(x, y, 4, 4);
                 context.fill();
             }
