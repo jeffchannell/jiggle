@@ -11,11 +11,9 @@ build: compile
 		cursor.js \
 		extension.js \
 		history.js \
-		kill.js \
 		LICENSE.txt \
 		math.js \
 		metadata.json \
-		overlay.js \
 		prefs.js \
 		settings.js \
 		stylesheet.css \
