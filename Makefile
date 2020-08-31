@@ -10,6 +10,7 @@ build: compile
 		schemas/ \
 		cursor.js \
 		extension.js \
+		fireworks.js \
 		history.js \
 		LICENSE.txt \
 		math.js \
@@ -34,6 +35,7 @@ local: compile
 		schemas/ \
 		cursor.js \
 		extension.js \
+		fireworks.js \
 		history.js \
 		LICENSE.txt \
 		math.js \

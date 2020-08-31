@@ -16,12 +16,16 @@ const St = imports.gi.St;
 
 const Me = ExtensionUtils.getCurrentExtension();
 const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
+const Fireworks = Me.imports.fireworks;
 const JCursor = Me.imports.cursor;
 const JHistory = Me.imports.history;
 const JSettings = Me.imports.settings;
 
 const INTERVAL_MS = 10;
 
+let currentFireworksTicLimit = 0;
+let fireworks = [];
+let fireworksTicLimit = 12; // number of tics we render a new firework
 let hideOriginal;
 let jiggling = false;
 let cursor;
@@ -78,6 +82,11 @@ function disable()
     // disconnect from the settings
     settings.disconnect(settingsID);
     settings = null;
+    // remove all the fireworks
+    for (let idx in fireworks) {
+        Main.uiGroup.remove_actor(fireworks[idx]);
+    }
+    fireworks = [];
 }
 
 /**
@@ -119,6 +128,16 @@ function main()
         stop();
     }
 
+    // run the fireworks, removing any that are complete
+    fireworks = fireworks.filter(firework => {
+        if (firework._complete) {
+            Main.uiGroup.remove_actor(firework);
+        } else {
+            firework.run();
+        }
+        return !firework._complete;
+    });
+
     removeInterval();
     pointerInterval = Mainloop.timeout_add(INTERVAL_MS, main);
 }
@@ -144,6 +163,14 @@ function onUpdate() {
             (JHistory.lastX - pointerIcon.width / 2) + (xhot * r),
             (JHistory.lastY - pointerIcon.height / 2) + (yhot * r)
         );
+
+        if (0 === currentFireworksTicLimit++) {
+            let firework = Fireworks.new_firework(JHistory.lastX, JHistory.lastY);
+            fireworks.push(firework);
+            Main.uiGroup.add_actor(firework);
+        } else if (currentFireworksTicLimit === fireworksTicLimit) {
+            currentFireworksTicLimit = 0;
+        }
     }
 }
 
