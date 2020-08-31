@@ -23,7 +23,7 @@ build: compile
 		widget.js
 
 test: compile
-	@./test.js
+	@LD_LIBRARY_PATH=/usr/lib/gnome-shell gjs --include-path=. test.js
 
 docker: compile
 	@./dockertest.sh
@@ -38,14 +38,11 @@ local: compile
 		cursor.js \
 		extension.js \
 		history.js \
-		kill.js \
 		LICENSE.txt \
 		math.js \
 		metadata.json \
-		overlay.js \
 		prefs.js \
 		settings.js \
-		socket.js \
 		stylesheet.css \
 		widget.js \
 		"${JIGGLE_DEV_DIR}"

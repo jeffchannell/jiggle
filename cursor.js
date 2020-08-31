@@ -13,7 +13,7 @@ try {
     Tweener = imports.tweener.tweener;
 }
 
-const Gdk = imports.gi.Gdk;
+const {Gdk} = imports.gi;
 
 var growthSpeed = 0.25;
 var shrinkSpeed = 0.15;
@@ -99,4 +99,14 @@ function getCursor()
 function getSize()
 {
     return target.size;
+}
+
+function setPointerVisible(toggle)
+{
+    let tracker = imports.gi.Meta.CursorTracker.get_for_display(global.display);
+    const seat = imports.gi.Clutter.get_default_backend().get_default_seat();
+    if (!seat.is_unfocus_inhibited()) {
+        seat.inhibit_unfocus();
+    }
+    tracker.set_pointer_visible(!!toggle);
 }
