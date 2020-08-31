@@ -35,7 +35,7 @@ function buildPrefsWidget() {
 
 function buildHScale(key, labelText, digits, min, max) {
     let hscale = JWidget.hscale(digits, min, max, settings.get_value(key).deep_unpack());
-    hscale.connect('value-changed', (widget) => settings.set_int(key, widget.get_value()));
+    hscale.connect('value-changed', (widget) => settings.set_value(key, widget.get_value()));
 
     return newHBox(labelText, hscale, true);
 }
