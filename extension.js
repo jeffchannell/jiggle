@@ -19,6 +19,7 @@ const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
 const JCursor = Me.imports.cursor;
 const JHistory = Me.imports.history;
 const JSettings = Me.imports.settings;
+const JSocket = Me.imports.socket;
 
 const INTERVAL_MS = 10;
 
@@ -78,6 +79,8 @@ function disable()
     // disconnect from the settings
     settings.disconnect(settingsID);
     settings = null;
+
+    JSocket.send(JSocket.KILL);
 }
 
 /**
@@ -85,9 +88,14 @@ function disable()
  */
 function enable()
 {
+    JSocket.send(JSocket.KILL);
+
     settings = JSettings.settings();
     settingsID = settings.connect('changed', update);
     update();
+
+    // we only check this on start
+    useSystem = settings.get_value('use-system').deep_unpack();
 
     // start the listeners
     pointerListener = PointerWatcher.addWatch(INTERVAL_MS, mouseMove);
@@ -99,6 +107,7 @@ function enable()
  */
 function init()
 {
+    JSocket.send(JSocket.KILL);
 }
 
 /**
