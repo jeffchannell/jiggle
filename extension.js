@@ -16,54 +16,21 @@ const St = imports.gi.St;
 
 const Me = ExtensionUtils.getCurrentExtension();
 const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
-const Fireworks = Me.imports.fireworks;
 const JCursor = Me.imports.cursor;
 const JHistory = Me.imports.history;
 const JSettings = Me.imports.settings;
+// effects
+const {Effects, FireworksEffect, ScalingEffect, SpotlightEffect} = Me.imports.effects;
 
 const INTERVAL_MS = 10;
 
-let currentFireworksTicLimit = 0;
-let fireworks = [];
-let fireworksTicLimit = 18; // number of tics we render a new firework
-let hideOriginal;
+let effect;
+let effectID;
 let jiggling = false;
-let cursor;
-let pointerIcon;
-let pointerImage;
 let pointerInterval;
 let pointerListener;
 let settings;
 let settingsID;
-let useSystem;
-let xhot;
-let yhot;
-
-let hideOriginalID;
-let growthSpeedID;
-let shrinkSpeedID;
-let shakeThresholdID;
-
-function getCursor()
-{
-    if (!cursor) {
-        cursor = JCursor.getCursor();
-    }
-
-    try {
-        let surface = cursor.get_surface();
-        xhot = surface[2];
-        yhot = surface[1];
-    } catch (err) {}
-
-    if (!pointerImage) {
-        pointerImage = useSystem ? cursor.get_image() : Gio.icon_new_for_string(Me.path + "/icons/jiggle-cursor.png");
-    }
-
-    return new St.Icon({
-        gicon: pointerImage,
-    });
-}
 
 /**
  * Stop the listeners and clean up any leftover assets.
@@ -82,11 +49,10 @@ function disable()
     // disconnect from the settings
     settings.disconnect(settingsID);
     settings = null;
-    // remove all the fireworks
-    for (let idx in fireworks) {
-        Main.uiGroup.remove_actor(fireworks[idx]);
+    // remove the current effect
+    if (effect) {
+        effect.disable();
     }
-    fireworks = [];
 }
 
 /**
@@ -94,12 +60,10 @@ function disable()
  */
 function enable()
 {
+    // connect to the settings and update the application
     settings = JSettings.settings();
     settingsID = settings.connect('changed', update);
     update();
-
-    // we only check this on start
-    useSystem = settings.get_value('use-system').deep_unpack();
 
     // start the listeners
     pointerListener = PointerWatcher.addWatch(INTERVAL_MS, mouseMove);
@@ -118,6 +82,7 @@ function init()
  */
 function main()
 {
+    // TODO have event dictate if jiggle is required to start
     if (JHistory.check()) {
         if (!jiggling) {
             jiggling = true;
@@ -128,16 +93,9 @@ function main()
         stop();
     }
 
-    // run the fireworks, removing any that are complete
-    fireworks = fireworks.filter(firework => {
-        if (firework._complete) {
-            Main.uiGroup.remove_actor(firework);
-        } else {
-            firework.run();
-        }
-        return !firework._complete;
-    });
+    onUpdate();
 
+    // update interval
     removeInterval();
     pointerInterval = Mainloop.timeout_add(INTERVAL_MS, main);
 }
@@ -155,22 +113,8 @@ function mouseMove(x, y)
 }
 
 function onUpdate() {
-    if (pointerIcon) {
-        let s = JCursor.getSize();
-        let r = s / JCursor.min;
-        pointerIcon.set_icon_size(s);
-        pointerIcon.set_position(
-            (JHistory.lastX - pointerIcon.width / 2) + (xhot * r),
-            (JHistory.lastY - pointerIcon.height / 2) + (yhot * r)
-        );
-
-        if (0 === currentFireworksTicLimit++) {
-            let firework = Fireworks.new_firework(JHistory.lastX, JHistory.lastY);
-            fireworks.push(firework);
-            Main.uiGroup.add_actor(firework);
-        } else if (currentFireworksTicLimit === fireworksTicLimit) {
-            currentFireworksTicLimit = 0;
-        }
+    if (effect) {
+        effect.run(JHistory.lastX, JHistory.lastY);
     }
 }
 
@@ -184,40 +128,42 @@ function removeInterval()
 
 function start()
 {
-    if (hideOriginal) {
-        JCursor.setPointerVisible(false);
+    if (effect) {
+        effect.start();
     }
-
-    if (!pointerIcon) {
-        pointerIcon = getCursor();
-        Main.uiGroup.add_actor(pointerIcon);
-    }
-
-    pointerIcon.set_position(JHistory.lastX, JHistory.lastY);
-
-    JCursor.fadeIn(onUpdate, null);
 }
 
 function stop()
 {
-    JCursor.fadeOut(onUpdate, function () {
-        if (hideOriginal) {
-            JCursor.setPointerVisible(true);
-        }
-        if (pointerIcon) {
-            Main.uiGroup.remove_actor(pointerIcon);
-            pointerIcon = null;
-        }
-    });
+    if (effect) {
+        effect.stop();
+    }
 }
 
 function update()
 {
+    // only update if settings is set
     if (settings) {
-        hideOriginal = settings.get_value('hide-original').deep_unpack();
-        JCursor.growthSpeed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
-        JCursor.shrinkSpeed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('shrink-speed').deep_unpack())));
+        // different settings go to different effects
+        let newEffectID = settings.get_value('effect').deep_unpack();
+        // this is a new effect setting - clean up the old effect and add the new one
+        if (effectID !== newEffectID) {
+            // TODO clean up the old effect
+            switch (effectID = newEffectID) {
+            case Effects.FIREWORKS:
+                effect = FireworksEffect.new_fireworks();
+                break;
+            case Effects.SPOTLIGHT:
+                effect = SpotlightEffect.new_spotlight();
+                break;
+            case Effects.CURSOR_SCALING:
+            default:
+                effect = ScalingEffect.new_scaling();
+                break;
+            }
+        }
+        effect.update(settings);
+
         JHistory.threshold = Math.max(10, Math.min(500, parseInt(settings.get_value('shake-threshold').deep_unpack(), 10)));
-        useSystem = settings.get_value('use-system').deep_unpack();
     }
 }

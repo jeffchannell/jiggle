@@ -1,6 +1,6 @@
 'use strict';
 
-const Gtk = imports.gi.Gtk;
+const {GObject, Gtk} = imports.gi;
 
 // It's common practice to keep GNOME API and JS imports in separate blocks
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -23,6 +23,13 @@ function buildPrefsWidget() {
         spacing: 10,
     });
 
+    let effects = ['Cursor Scaling', 'Fireworks', 'Spotlight'];
+    let effectBox = new Gtk.ComboBoxText({});
+    effects.map(val => effectBox.append_text(val));
+    effectBox.set_active(settings.get_value('effect').deep_unpack());
+    effectBox.connect('changed', (widget) => settings.set_int('effect', widget.get_active()));
+    frame.add(newHBox('Effect', effectBox, true));
+
     frame.add(buildSwitcher('use-system', 'Use System Cursor'));
     frame.add(buildSwitcher('hide-original', 'Hide Original Cursor'));
     frame.add(buildHScale('growth-speed', 'Growth Speed', 2, 0.1, 1.0));
@@ -35,7 +42,13 @@ function buildPrefsWidget() {
 
 function buildHScale(key, labelText, digits, min, max) {
     let hscale = JWidget.hscale(digits, min, max, settings.get_value(key).deep_unpack());
-    hscale.connect('value-changed', (widget) => settings.set_value(key, widget.get_value()));
+    hscale.connect('value-changed', (widget) => {
+        if (0 === digits) {
+            settings.set_int(key, widget.get_value());
+        } else {
+            settings.set_double(key, widget.get_value());
+        }
+    });
 
     return newHBox(labelText, hscale, true);
 }

@@ -3,20 +3,34 @@
 <schemalist>
     <schema id="org.gnome.shell.extensions.jiggle" path="/org/gnome/shell/extensions/jiggle/">
         <!-- See also: https://developer.gnome.org/glib/stable/gvariant-format-strings.html -->
+        <!-- Which effect to use -->
+        <key name="effect" type="i">
+            <default>0</default>
+        </key>
+        <!-- Cursor Scaling mode settings -->
+        <!-- Hide original cursor -->
         <key name="hide-original" type="b">
             <default>true</default>
         </key>
+        <!-- Use system icon when true, or use image in icons/ when false -->
         <key name="use-system" type="b">
             <default>false</default>
         </key>
+        <!-- How fast does the cursor grow -->
         <key name="growth-speed" type="d">
             <default>0.25</default>
         </key>
+        <!-- How fast does the cursor grow -->
         <key name="shrink-speed" type="d">
             <default>0.15</default>
         </key>
+        <!-- How much does the pointer need to move -->
         <key name="shake-threshold" type="i">
             <default>200</default>
         </key>
+        <!-- Fireworks settings -->
+        <!-- TODO -->
+        <!-- Spotlight settings -->
+        <!-- TODO -->
     </schema>
 </schemalist>
