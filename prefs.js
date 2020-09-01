@@ -23,19 +23,59 @@ function buildPrefsWidget() {
         spacing: 10,
     });
 
+    let effect = settings.get_value('effect').deep_unpack();
     let effects = ['Cursor Scaling', 'Fireworks', 'Spotlight'];
+    let frames = [null, null, null];
+
+    // Cursor Scaling options
+    frames[0] = new Gtk.Box({
+        orientation: Gtk.Orientation.VERTICAL,
+        spacing: 10,
+    });
+    frames[0].add(buildSwitcher('use-system', 'Use System Cursor'));
+    frames[0].add(buildSwitcher('hide-original', 'Hide Original Cursor'));
+    frames[0].add(buildHScale('growth-speed', 'Growth Speed', 2, 0.1, 1.0));
+    frames[0].add(buildHScale('shrink-speed', 'Shrink Speed', 2, 0.1, 1.0));
+    frames[0].add(buildHScale('shake-threshold', 'Shake Threshold', 0, 10, 500));
+
+    // Fireworks options
+    frames[1] = new Gtk.Box({
+        orientation: Gtk.Orientation.VERTICAL,
+        spacing: 10,
+    });
+    frames[1].add(buildHScale('fireworks-burst-speed', 'Burst Speed', 2, 0.25, 1.0));
+    frames[1].add(buildHScale('fireworks-spark-count', 'Spark Count', 0, 20, 100));
+    frames[1].add(buildHScale('fireworks-spark-trail', 'Spark Trail', 0, 6, 12));
+
+    // Spotlight options
+    frames[2] = new Gtk.Box({
+        orientation: Gtk.Orientation.VERTICAL,
+        spacing: 10,
+    });
+    frames[2].add(buildHScale('spotlight-size', 'Size', 0, 64, 300));
+    frames[2].add(buildHScale('spotlight-show-speed', 'Show Speed', 2, 0.1, 1.0));
+    frames[2].add(buildHScale('spotlight-hide-speed', 'Hide Speed', 2, 0.1, 1.0));
+
+    // the main effects setting, which controls visibility of the above sections
     let effectBox = new Gtk.ComboBoxText({});
     effects.map(val => effectBox.append_text(val));
-    effectBox.set_active(settings.get_value('effect').deep_unpack());
-    effectBox.connect('changed', (widget) => settings.set_int('effect', widget.get_active()));
+    effectBox.set_active(effect);
+    effectBox.connect('changed', (widget) => {
+        let active = widget.get_active();
+        // set the value in the settings
+        settings.set_int('effect', active);
+        // hide each frame, unless it's this one
+        for (let i = 0; i < frames.length; i++) {
+            frames[i].hide();
+        }
+        frames[active].show_all();
+    });
     frame.add(newHBox('Effect', effectBox, true));
-
-    frame.add(buildSwitcher('use-system', 'Use System Cursor'));
-    frame.add(buildSwitcher('hide-original', 'Hide Original Cursor'));
-    frame.add(buildHScale('growth-speed', 'Growth Speed', 2, 0.1, 1.0));
-    frame.add(buildHScale('shrink-speed', 'Shrink Speed', 2, 0.1, 1.0));
-    frame.add(buildHScale('shake-threshold', 'Shake Threshold', 0, 10, 500));
     frame.show_all();
+
+    // add the frames
+    frames.map(f => frame.add(f));
+    frames[effect].show_all();
 
     return frame;
 }

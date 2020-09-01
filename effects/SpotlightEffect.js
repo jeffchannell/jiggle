@@ -6,8 +6,6 @@ const Tweener = imports.ui.tweener;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
 
-var lightRadius = 50;
-
 const SpotlightDrawingArea = GObject.registerClass({
     GTypeName: 'SpotlightDrawingArea',
 }, class SpotlightDrawingArea extends St.DrawingArea {
@@ -16,10 +14,10 @@ const SpotlightDrawingArea = GObject.registerClass({
         this.spotlight = {
             x: 0,
             y: 0,
-            size: 128,
+            size: 180,
             opacity: 0,
-            show_speed: 0.2,
-            hide_speed: 0.2,
+            show_speed: 0.4,
+            hide_speed: 0.25,
         };
 
         this.show();
@@ -88,7 +86,10 @@ const SpotlightDrawingArea = GObject.registerClass({
     }
 
     update(settings) {
-        //
+        this.spotlight.size = settings.get_value('spotlight-size').deep_unpack();
+        this.spotlight.hide_speed = settings.get_value('spotlight-hide-speed').deep_unpack();
+        this.spotlight.show_speed = settings.get_value('spotlight-show-speed').deep_unpack();
+        this.queue_repaint();
     }
 });
 

@@ -8,9 +8,7 @@ const Tweener = imports.ui.tweener;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
 
-var burstSpeed = 0.5; // between 0.5 and 2
-var sparkAmount = 50; // between 20 - 50
-var sparkTrail = 10;
+// TODO add more color variance, maybe some themes ??
 
 const Spark = class Spark {
     constructor(x, y, weight, r, g, b) {
@@ -24,12 +22,12 @@ const Spark = class Spark {
 }
 
 const Firework = class Firework {
-    constructor(x, y) {
+    constructor(x, y, count) {
         this.x = x;
         this.y = y;
         this.age = 0;
         this.sparks = [];
-        for (let i = 0; i < sparkAmount; i++) {
+        for (let i = 0; i < count; i++) {
             this.sparks.push(new Spark());
         }
     }
@@ -44,6 +42,9 @@ const FireworksDrawingArea = GObject.registerClass({
         this.show_speed = 0.2;
         this.hide_speed = 0.2;
         this.create_new = false;
+        this.burst_speed = 0.5;
+        this.spark_count = 50; // between 20 - 50
+        this.spark_trail = 10; // between 4-12?
 
         this.show();
 
@@ -68,8 +69,8 @@ const FireworksDrawingArea = GObject.registerClass({
         context.fill();
         for (let i = 0; i < this.fireworks.length; i++) {
             for (let j = 0; j < this.fireworks[i].sparks.length; j++) {
-                for (let k = 0; k < sparkTrail; k++) {
-                    let trailAge = this.fireworks[i].age + (k * burstSpeed);
+                for (let k = 0; k < this.spark_trail; k++) {
+                    let trailAge = this.fireworks[i].age + (k * this.burst_speed);
                     let x = this.fireworks[i].x + this.fireworks[i].sparks[j].x * trailAge;
                     let y = this.fireworks[i].y + this.fireworks[i].sparks[j].y * trailAge + this.fireworks[i].sparks[j].weight * trailAge * this.fireworks[i].sparks[j].weight * trailAge;
                     let a = (k * 20 - this.fireworks[i].age * 2) / 255;
@@ -98,7 +99,7 @@ const FireworksDrawingArea = GObject.registerClass({
             if (this.create_new) {
                 // spin the dice lol
                 if (5 === (Math.round(Math.random() * 15))) {
-                    this.fireworks.push(new Firework(x, y));
+                    this.fireworks.push(new Firework(x, y, this.spark_count));
                 }
             } else if (0 === this.fireworks.length) {
                 Main.uiGroup.remove_actor(this);
@@ -119,7 +120,10 @@ const FireworksDrawingArea = GObject.registerClass({
     }
 
     update(settings) {
-        //
+        this.burst_speed = settings.get_value('fireworks-burst-speed').deep_unpack();
+        this.spark_count = settings.get_value('fireworks-spark-count').deep_unpack();
+        this.spark_trail = settings.get_value('fireworks-spark-trail').deep_unpack();
+        this.queue_repaint();
     }
 });
 
