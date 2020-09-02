@@ -45,7 +45,7 @@ function buildPrefsWidget() {
     });
     frames[1].add(buildHScale('fireworks-burst-speed', 'Burst Speed', 2, 0.25, 1.0));
     frames[1].add(buildHScale('fireworks-spark-count', 'Spark Count', 0, 20, 100));
-    frames[1].add(buildHScale('fireworks-spark-trail', 'Spark Trail', 0, 6, 12));
+    frames[1].add(buildHScale('fireworks-spark-trail', 'Spark Trail', 0, 8, 20));
 
     // Spotlight options
     frames[2] = new Gtk.Box({
