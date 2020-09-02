@@ -34,24 +34,14 @@ const ScalingIcon = GObject.registerClass({
         this.system_cursor = null;
         this.system_cursor_size = null;
 
-        // try {
-        //     let surface = this.system_cursor.get_surface();
-        //     this.cursor_xhot = surface[2];
-        //     this.cursor_yhot = surface[1];
-        // } catch (err) {
-        //     print('Jiggle Error: could not get x/y offset for cursor: '+err);
-        // }
-
-        this.disable = this.disable.bind(this);
+        this.render = this.render.bind(this);
         this.run = this.run.bind(this);
         this.start = this.start.bind(this);
         this.stop = this.stop.bind(this);
         this.update = this.update.bind(this);
     }
 
-    disable() {
-        //
-    }
+    render() {}
 
     /**
      * Run a single render loop.

@@ -78,7 +78,7 @@ const FireworksDrawingArea = GObject.registerClass({
 
         this.show();
 
-        this.disable = this.disable.bind(this);
+        this.render = this.render.bind(this);
         this.run = this.run.bind(this);
         this.start = this.start.bind(this);
         this.stop = this.stop.bind(this);
@@ -103,8 +103,8 @@ const FireworksDrawingArea = GObject.registerClass({
         })));
     }
 
-    disable() {
-        // 
+    render() {
+        if (this.get_parent()) this.queue_repaint();
     }
 
     /**
@@ -127,7 +127,6 @@ const FireworksDrawingArea = GObject.registerClass({
             } else if (0 === this.fireworks.length) {
                 Main.uiGroup.remove_actor(this);
             }
-            this.queue_repaint();
         }
     }
 
@@ -149,7 +148,6 @@ const FireworksDrawingArea = GObject.registerClass({
         this.burst_speed = settings.get_value('fireworks-burst-speed').deep_unpack();
         this.spark_count = settings.get_value('fireworks-spark-count').deep_unpack();
         this.spark_trail = settings.get_value('fireworks-spark-trail').deep_unpack();
-        this.queue_repaint();
     }
 });
 

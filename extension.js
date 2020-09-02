@@ -26,8 +26,8 @@ const INTERVAL_MS = 10;
 
 let effect;
 let effectID;
+let intervals = [];
 let jiggling = false;
-let pointerInterval;
 let pointerListener;
 let settings;
 let settingsID;
@@ -35,113 +35,62 @@ let settingsID;
 /**
  * Stop the listeners and clean up any leftover assets.
  */
-function disable()
-{
+function disable() {
     // reset to defaults
     jiggling = false;
     JHistory.clear();
     // remove our pointer listener
-    if (pointerListener) {
-        PointerWatcher._removeWatch(pointerListener);
-    }
+    if (pointerListener) PointerWatcher._removeWatch(pointerListener);
     // stop the interval
-    removeInterval();
+    intervals.map(i => Mainloop.source_remove(i));
+    intervals = [];
     // disconnect from the settings
     settings.disconnect(settingsID);
     settings = null;
-    // remove the current effect
-    if (effect) {
-        effect.disable();
-    }
 }
 
 /**
  * Start the listeners.
  */
-function enable()
-{
+function enable() {
     // connect to the settings and update the application
     settings = JSettings.settings();
     settingsID = settings.connect('changed', update);
     update();
 
     // start the listeners
-    pointerListener = PointerWatcher.addWatch(INTERVAL_MS, mouseMove);
-    main();
+    pointerListener = PointerWatcher.addWatch(INTERVAL_MS, (x, y) => {
+        JHistory.push(x, y);
+        if (effect) effect.run(x, y);
+    });
+    intervals.push(Mainloop.timeout_add(INTERVAL_MS, () => {
+        if (JHistory.check()) {
+            if (!jiggling) {
+                jiggling = true;
+                if (effect) effect.start();
+            }
+        } else if (jiggling) {
+            jiggling = false;
+            if (effect) effect.stop();
+        }
+    
+        if (effect) effect.run(JHistory.lastX, JHistory.lastY);
+    
+        return true;
+    }));
+    intervals.push(Mainloop.timeout_add(34, () => {
+        if (effect) effect.render();
+        return true;
+    }));
 }
 
 /**
  * Initialize (required by Gnome Shell).
  */
-function init()
-{
+function init() {
 }
 
-/**
- * Main application loop.
- */
-function main()
-{
-    // TODO have event dictate if jiggle is required to start
-    if (JHistory.check()) {
-        if (!jiggling) {
-            jiggling = true;
-            start();
-        }
-    } else if (jiggling) {
-        jiggling = false;
-        stop();
-    }
-
-    onUpdate();
-
-    // update interval
-    removeInterval();
-    pointerInterval = Mainloop.timeout_add(INTERVAL_MS, main);
-}
-
-/**
- * Watch for mouse jiggling!
- * 
- * @param {Number} x
- * @param {Number} y
- */
-function mouseMove(x, y)
-{
-    JHistory.push(x, y);
-    onUpdate();
-}
-
-function onUpdate() {
-    if (effect) {
-        effect.run(JHistory.lastX, JHistory.lastY);
-    }
-}
-
-function removeInterval()
-{
-    if (pointerInterval) {
-        Mainloop.source_remove(pointerInterval);
-        pointerInterval = null;
-    }
-}
-
-function start()
-{
-    if (effect) {
-        effect.start();
-    }
-}
-
-function stop()
-{
-    if (effect) {
-        effect.stop();
-    }
-}
-
-function update()
-{
+function update() {
     // only update if settings is set
     if (settings) {
         // different settings go to different effects
