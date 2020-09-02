@@ -24,7 +24,6 @@ const ScalingIcon = GObject.registerClass({
         this.system_cursor_size = this.system_cursor.get_image().get_width();
         this.growth_speed = 0.25;
         this.shrink_speed = 0.15;
-        this.threshold = 200;
         this.gicon = this.custom_cursor;
         this.current_size = this.custom_cursor_size;
         this.use_system = false;
@@ -104,7 +103,6 @@ const ScalingIcon = GObject.registerClass({
         this.hide_cursor = settings.get_value('hide-original').deep_unpack();
         this.growth_speed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
         this.shrink_speed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('shrink-speed').deep_unpack())));
-        this.threshold = Math.max(10, Math.min(500, parseInt(settings.get_value('shake-threshold').deep_unpack(), 10)));
     }
 });
 

@@ -16,9 +16,7 @@ build: compile
 		math.js \
 		metadata.json \
 		prefs.js \
-		settings.js \
-		stylesheet.css \
-		widget.js
+		settings.js
 
 test: compile
 	@LD_LIBRARY_PATH=/usr/lib/gnome-shell gjs --include-path=. test.js
@@ -42,8 +40,6 @@ local: compile
 		metadata.json \
 		prefs.js \
 		settings.js \
-		stylesheet.css \
-		widget.js \
 		"${JIGGLE_DEV_DIR}"
 	@echo "Overwriting metadata"
 	@sed -e :a \

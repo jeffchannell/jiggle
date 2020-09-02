@@ -6,7 +6,6 @@ const {GObject, Gtk} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const JSettings = Me.imports.settings;
-const JWidget = Me.imports.widget;
 
 let settings;
 
@@ -36,7 +35,6 @@ function buildPrefsWidget() {
     frames[0].add(buildSwitcher('hide-original', 'Hide Original Cursor'));
     frames[0].add(buildHScale('growth-speed', 'Growth Speed', 2, 0.1, 1.0));
     frames[0].add(buildHScale('shrink-speed', 'Shrink Speed', 2, 0.1, 1.0));
-    frames[0].add(buildHScale('shake-threshold', 'Shake Threshold', 0, 10, 500));
 
     // Fireworks options
     frames[1] = new Gtk.Box({
@@ -55,6 +53,9 @@ function buildPrefsWidget() {
     frames[2].add(buildHScale('spotlight-size', 'Size', 0, 64, 300));
     frames[2].add(buildHScale('spotlight-show-speed', 'Show Speed', 2, 0.1, 1.0));
     frames[2].add(buildHScale('spotlight-hide-speed', 'Hide Speed', 2, 0.1, 1.0));
+
+    // main shake setting
+    frame.add(buildHScale('shake-threshold', 'Shake Threshold', 0, 10, 500));
 
     // the main effects setting, which controls visibility of the above sections
     let effectBox = new Gtk.ComboBoxText({});
@@ -81,7 +82,12 @@ function buildPrefsWidget() {
 }
 
 function buildHScale(key, labelText, digits, min, max) {
-    let hscale = JWidget.hscale(digits, min, max, settings.get_value(key).deep_unpack());
+    let hscale = new Gtk.HScale({
+        visible: true
+    });
+    hscale.set_digits(digits);
+    hscale.set_range(min, max);
+    hscale.set_value(settings.get_value(key).deep_unpack());
     hscale.connect('value-changed', (widget) => {
         if (0 === digits) {
             settings.set_int(key, widget.get_value());
@@ -93,8 +99,31 @@ function buildHScale(key, labelText, digits, min, max) {
     return newHBox(labelText, hscale, true);
 }
 
+/**
+ * Get a Label widget.
+ * 
+ * @param {String} labelText
+ * 
+ * @return {imports.gi.Gtk.Label} Label widget
+ */
+function buildLabelWidget(labelText) {
+    let options = {
+        label: labelText,
+        halign: Gtk.Align.START,
+        use_markup: true,
+        visible: true,
+    };
+
+    return new Gtk.Label(options);
+}
+
 function buildSwitcher(key, labelText) {
-    let switcher = JWidget.switcher(settings.get_value(key).deep_unpack());
+    let value = settings.get_value(key).deep_unpack();
+    let switcher = new Gtk.Switch({
+        active: value,
+        state: value,
+        visible: true,
+    });
     switcher.connect('state-set', (widget, state) => {
         settings.set_boolean(key, state);
         widget.set_active(state);
@@ -110,9 +139,8 @@ function newHBox(labelText, widget, stretch)
         spacing: 10,
         homogeneous: stretch,
     });
-    let label = JWidget.label(labelText)
 
-    hbox.pack_start(label, true, true, 0);
+    hbox.pack_start(buildLabelWidget(labelText), true, true, 0);
     hbox.add(widget);
 
     return hbox;
