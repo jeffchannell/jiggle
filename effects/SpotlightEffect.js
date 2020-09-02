@@ -61,6 +61,10 @@ const SpotlightDrawingArea = GObject.registerClass({
     }
 
     start() {
+        let screen = Gdk.Display.get_default().get_default_screen();
+        this.set_height(screen.get_height());
+        this.set_width(screen.get_width());
+
         if (!this.get_parent()) {
             Main.uiGroup.add_actor(this);
         }
@@ -98,13 +102,5 @@ const SpotlightDrawingArea = GObject.registerClass({
 });
 
 function new_spotlight() {
-    let screen = Gdk.Display.get_default().get_default_screen();
-
-    return new SpotlightDrawingArea({
-        height: screen.get_height(),
-        visible: true,
-        width: screen.get_width(),
-        x: 0,
-        y: 0,
-    });
+    return new SpotlightDrawingArea({visible: true, x: 0, y: 0});
 }

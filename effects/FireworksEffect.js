@@ -109,6 +109,9 @@ const FireworksDrawingArea = GObject.registerClass({
     }
 
     start() {
+        let screen = Gdk.Display.get_default().get_default_screen();
+        this.set_height(screen.get_height());
+        this.set_width(screen.get_width());
         this.create_new = true;
         if (!this.get_parent()) {
             Main.uiGroup.add_actor(this);
@@ -128,13 +131,5 @@ const FireworksDrawingArea = GObject.registerClass({
 });
 
 function new_fireworks() {
-    let screen = Gdk.Display.get_default().get_default_screen();
-
-    return new FireworksDrawingArea({
-        height: screen.get_height(),
-        visible: true,
-        width: screen.get_width(),
-        x: 0,
-        y: 0,
-    });
+    return new FireworksDrawingArea({visible: true, x: 0, y: 0});
 }
