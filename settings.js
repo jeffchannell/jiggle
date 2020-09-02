@@ -2,6 +2,9 @@
 
 const Gio = imports.gi.Gio;
 
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
+
 /**
  * Get the extension settings.
  * 
@@ -9,16 +12,8 @@ const Gio = imports.gi.Gio;
  */
 function settings()
 {
-    let path;
-
-    try {
-        path = imports.misc.extensionUtils.getCurrentExtension().dir.get_child('schemas').get_path();
-    } catch (err) {
-        path = Gio.File.new_for_path('schemas').get_path();
-    }
-
     let gschema = Gio.SettingsSchemaSource.new_from_directory(
-        path,
+        Me.dir.get_child('schemas').get_path(),
         Gio.SettingsSchemaSource.get_default(),
         false
     );

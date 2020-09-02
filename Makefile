@@ -6,6 +6,7 @@ JIGGLE_DEV_DIR := "${HOME}/.local/share/gnome-shell/extensions/jiggle-dev@jeffch
 build: compile
 	@rm jiggle_${JIGGLE_VERSION}.zip 2> /dev/null || true
 	@zip -r jiggle_${JIGGLE_VERSION}.zip \
+		effects/ \
 		icons/ \
 		schemas/ \
 		cursor.js \
@@ -15,9 +16,7 @@ build: compile
 		math.js \
 		metadata.json \
 		prefs.js \
-		settings.js \
-		stylesheet.css \
-		widget.js
+		settings.js
 
 test: compile
 	@LD_LIBRARY_PATH=/usr/lib/gnome-shell gjs --include-path=. test.js
@@ -30,6 +29,7 @@ local: compile
 	@rm -rvf "${JIGGLE_DEV_DIR}" || true
 	@mkdir -p "${JIGGLE_DEV_DIR}" || true
 	@cp -rv \
+		effects/ \
 		icons/ \
 		schemas/ \
 		cursor.js \
@@ -40,8 +40,6 @@ local: compile
 		metadata.json \
 		prefs.js \
 		settings.js \
-		stylesheet.css \
-		widget.js \
 		"${JIGGLE_DEV_DIR}"
 	@echo "Overwriting metadata"
 	@sed -e :a \
