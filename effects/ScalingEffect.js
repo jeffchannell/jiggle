@@ -9,8 +9,6 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Cursor = Me.imports.cursor;
 
-var lightRadius = 50;
-
 const ScalingIcon = GObject.registerClass({
     GTypeName: 'ScalingIcon',
 }, class ScalingIcon extends St.Icon {
