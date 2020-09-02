@@ -58,7 +58,7 @@ const ScalingIcon = GObject.registerClass({
      */
     run(x, y) {
         if (this.get_parent()) {
-            let r = this.current_size / (this.use_system ? this.custom_cursor_size : this.system_cursor_size);
+            let r = this.current_size / this.system_cursor_size;
             if (this.get_parent()) {
                 this.set_icon_size(this.current_size);
                 this.set_position(
@@ -103,7 +103,7 @@ const ScalingIcon = GObject.registerClass({
         Tweener.pauseTweens(this);
         Tweener.removeTweens(this);
         Tweener.addTween(this, {
-            current_size: (this.use_system ? this.custom_cursor_size : this.system_cursor_size) * 3,
+            current_size: this.system_cursor_size * 3,
             time: this.growth_speed,
             transition: 'easeOutQuad',
         });
@@ -113,7 +113,7 @@ const ScalingIcon = GObject.registerClass({
         Tweener.pauseTweens(this);
         Tweener.removeTweens(this);
         Tweener.addTween(this, {
-            current_size: (this.use_system ? this.custom_cursor_size : this.system_cursor_size),
+            current_size: this.system_cursor_size,
             time: this.shrink_speed,
             transition: 'easeInQuad',
             onComplete: () => {
