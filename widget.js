@@ -1,11 +1,5 @@
 'use strict';
 
-// necessary for tests, but not extension
-try {
-    imports.gi.versions.Gtk = '3.0';
-    imports.gi.Gtk.init(null);
-} catch (err) {}
-
 const Gtk = imports.gi.Gtk;
 
 /**

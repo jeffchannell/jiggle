@@ -1,6 +1,11 @@
 #!/usr/bin/gjs --include-path=.
-const Gio = imports.gi.Gio;
+
+imports.gi.versions.Gdk = imports.gi.versions.Gtk = '3.0';
+
+const {Gio, Gtk} = imports.gi;
 const gjsunit = imports.gjsunit;
+
+Gtk.init(null);
 
 // find all *_test.js files and import them
 let dir = Gio.File.new_for_path('.');

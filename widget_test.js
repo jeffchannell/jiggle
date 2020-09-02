@@ -16,3 +16,15 @@ suite.addTest("label", function() {
 
     gjsunit.assertEquals(t, w.get_label());
 });
+
+suite.addTest("switcher", function() {
+    let w1 = imports.widget.switcher(true);
+
+    gjsunit.assertTrue(w1.get_state());
+    gjsunit.assertTrue(w1.get_active());
+
+    let w2 = imports.widget.switcher(false);
+
+    gjsunit.assertFalse(w2.get_state());
+    gjsunit.assertFalse(w2.get_active());
+});

@@ -3,13 +3,8 @@
 const HISTORY_MAX = 500;
 const SHAKE_DEGREES = 500;
 
-let math;
-try {
-    const Me = imports.misc.extensionUtils.getCurrentExtension();
-    math = Me.imports.math;
-} catch (err) {
-    math = imports.math;
-}
+const Me = imports.misc.extensionUtils.getCurrentExtension();
+const math = Me.imports.math;
 
 let history = [];
 var lastX = 0;
