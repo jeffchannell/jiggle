@@ -20,8 +20,6 @@ const ScalingIcon = GObject.registerClass({
         this.hide_cursor = true;
         this.custom_cursor = Gio.icon_new_for_string(Me.path + "/icons/jiggle-cursor.png");
         this.custom_cursor_size = 96;
-        this.system_cursor = Gdk.Cursor.new_from_name(Gdk.Display.get_default(), 'arrow');
-        this.system_cursor_size = this.system_cursor.get_image().get_width();
         this.growth_speed = 0.25;
         this.shrink_speed = 0.15;
         this.gicon = this.custom_cursor;
@@ -30,13 +28,19 @@ const ScalingIcon = GObject.registerClass({
         this.cursor_xhot = 6;
         this.cursor_yhot = 4;
 
-        try {
-            let surface = this.system_cursor.get_surface();
-            this.cursor_xhot = surface[2];
-            this.cursor_yhot = surface[1];
-        } catch (err) {
-            print('Jiggle Error: could not get x/y offset for cursor: '+err);
-        }
+        // these elements are not always available on init
+        // thanks, Wayland (?)
+        // so they are set to null for now, and filled in as soon as possible
+        this.system_cursor = null;
+        this.system_cursor_size = null;
+
+        // try {
+        //     let surface = this.system_cursor.get_surface();
+        //     this.cursor_xhot = surface[2];
+        //     this.cursor_yhot = surface[1];
+        // } catch (err) {
+        //     print('Jiggle Error: could not get x/y offset for cursor: '+err);
+        // }
 
         this.disable = this.disable.bind(this);
         this.run = this.run.bind(this);
@@ -53,17 +57,41 @@ const ScalingIcon = GObject.registerClass({
      * Run a single render loop.
      */
     run(x, y) {
-        let r = this.current_size / (this.use_system ? this.custom_cursor_size : this.system_cursor_size);
         if (this.get_parent()) {
-            this.set_icon_size(this.current_size);
-            this.set_position(
-                (x - this.width / 2) + (this.cursor_xhot * r),
-                (y - this.height / 2) + (this.cursor_yhot * r)
-            );
+            let r = this.current_size / (this.use_system ? this.custom_cursor_size : this.system_cursor_size);
+            if (this.get_parent()) {
+                this.set_icon_size(this.current_size);
+                this.set_position(
+                    (x - this.width / 2) + (this.cursor_xhot * r),
+                    (y - this.height / 2) + (this.cursor_yhot * r)
+                );
+            }
         }
     }
 
     start() {
+        // hack, to prevent crashes on Wayland
+        if (!this.system_cursor) {
+            // attempt to get the system cursor for the first time
+            try {
+                let display = Gdk.Display.get_default();
+                this.system_cursor = Gdk.Cursor.new_from_name(display, 'arrow');
+                this.system_cursor_size = this.system_cursor.get_image().get_width();
+            } catch (err) {
+                print('Jiggle Error: could not get system cursor: '+err);
+
+                return;
+            }
+
+            try {
+                let surface = this.system_cursor.get_surface();
+                this.cursor_xhot = surface[2];
+                this.cursor_yhot = surface[1];
+            } catch (err) {
+                print('Jiggle Error: could not get x/y offset for cursor: '+err);
+            }
+        }
+
         if (this.hide_cursor) {
             Cursor.setPointerVisible(false);
         }
@@ -99,10 +127,14 @@ const ScalingIcon = GObject.registerClass({
 
     update(settings) {
         this.use_system = settings.get_value('use-system').deep_unpack();
-        this.gicon = this.use_system ? this.system_cursor : this.custom_cursor;
         this.hide_cursor = settings.get_value('hide-original').deep_unpack();
         this.growth_speed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
         this.shrink_speed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('shrink-speed').deep_unpack())));
+        if (!this.use_system) {
+            this.gicon = this.custom_cursor;
+        } else if (this.system_cursor) {
+            this.gicon = this.system_cursor.get_image();
+        }
     }
 });
 
