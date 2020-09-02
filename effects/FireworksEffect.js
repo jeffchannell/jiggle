@@ -11,25 +11,55 @@ const Mainloop = imports.mainloop;
 // TODO add more color variance, maybe some themes ??
 
 const Spark = class Spark {
-    constructor(x, y, weight, r, g, b) {
+    constructor() {
+        this.a = 0;
+        this.x = 0;
+        this.y = 0;
+    }
+}
+
+const SparkTrail = class SparkTrail {
+    constructor(count, speed) {
+        this.speed = speed;
         this.x = ((Math.random() > .5) ? -1 : 1) * (Math.random() * 5 + .5);
         this.y = ((Math.random() > .5) ? -1 : 1) * (Math.random() * 5 + .5);
         this.weight = Math.random() * .3 + .15;
         this.r = Math.min(1, Math.floor(Math.random() * 2));
         this.g = Math.min(1, Math.floor(Math.random() * 2));
         this.b = Math.min(1, Math.floor(Math.random() * 2));
-    }
-}
-
-const Firework = class Firework {
-    constructor(x, y, count) {
-        this.x = x;
-        this.y = y;
-        this.age = 0;
         this.sparks = [];
         for (let i = 0; i < count; i++) {
             this.sparks.push(new Spark());
         }
+
+        this.run = this.run.bind(this);
+    }
+
+    run(x, y, age) {
+        this.sparks.map((s, i) => {
+            let trailAge = age + i * this.speed;
+            s.a = (i * 20 - age * 2) / 255;
+            s.x = x + this.x * trailAge;
+            s.y = y + this.y * trailAge + this.weight * trailAge * this.weight * trailAge;
+        });
+    }
+}
+
+const Firework = class Firework {
+    constructor(x, y, count, trail, speed) {
+        this.x = x;
+        this.y = y;
+        this.age = 0;
+        this.trails = [];
+        for (let i = 0; i < count; i++) {
+            this.trails.push(new SparkTrail(trail, speed));
+        }
+
+        this.run = this.run.bind(this);
+    }
+
+    run() {
+        this.trails.map(t => t.run(this.x, this.y, this.age));
     }
 };
 
@@ -67,19 +97,11 @@ const FireworksDrawingArea = GObject.registerClass({
         context.setSourceRGBA(0, 0, 0, 0);
         context.rectangle(0, 0, this.width, this.height);
         context.fill();
-        for (let i = 0; i < this.fireworks.length; i++) {
-            for (let j = 0; j < this.fireworks[i].sparks.length; j++) {
-                for (let k = 0; k < this.spark_trail; k++) {
-                    let trailAge = this.fireworks[i].age + (k * this.burst_speed);
-                    let x = this.fireworks[i].x + this.fireworks[i].sparks[j].x * trailAge;
-                    let y = this.fireworks[i].y + this.fireworks[i].sparks[j].y * trailAge + this.fireworks[i].sparks[j].weight * trailAge * this.fireworks[i].sparks[j].weight * trailAge;
-                    let a = (k * 20 - this.fireworks[i].age * 2) / 255;
-                    context.setSourceRGBA(this.fireworks[i].sparks[j].r, this.fireworks[i].sparks[j].g, this.fireworks[i].sparks[j].b, a);
-                    context.rectangle(x, y, 4, 4);
-                    context.fill();
-                }
-            }
-        }
+        this.fireworks.map(firework => firework.trails.map(trail => trail.sparks.map(spark => {
+            context.setSourceRGBA(trail.r, trail.g, trail.b, spark.a);
+            context.rectangle(spark.x, spark.y, 4, 4);
+            context.fill();
+        })));
     }
 
     disable() {
@@ -95,11 +117,13 @@ const FireworksDrawingArea = GObject.registerClass({
             return ++firework.age < 100;
         });
 
+        this.fireworks.map(f => f.run());
+
         if (this.get_parent()) {
             if (this.create_new) {
                 // spin the dice lol
                 if (5 === (Math.round(Math.random() * 15))) {
-                    this.fireworks.push(new Firework(x, y, this.spark_count));
+                    this.fireworks.push(new Firework(x, y, this.spark_count, this.spark_trail, this.burst_speed));
                 }
             } else if (0 === this.fireworks.length) {
                 Main.uiGroup.remove_actor(this);
