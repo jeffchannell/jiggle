@@ -162,7 +162,9 @@ function update()
                 break;
             }
         }
-        effect.update(settings);
+        if (effect) {
+            effect.update(settings);
+        }
 
         JHistory.threshold = Math.max(10, Math.min(500, parseInt(settings.get_value('shake-threshold').deep_unpack(), 10)));
     }
