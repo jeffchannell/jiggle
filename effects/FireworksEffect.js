@@ -101,10 +101,13 @@ const FireworksDrawingArea = GObject.registerClass({
                 if (5 === (Math.round(Math.random() * 15))) {
                     this.fireworks.push(new Firework(x, y, this.spark_count));
                 }
-            } else if (0 === this.fireworks.length) {
-                Main.uiGroup.remove_actor(this);
             }
-            this.queue_repaint();
+
+            if (0 === this.fireworks.length) {
+                Main.uiGroup.remove_actor(this);
+            } else {
+                this.queue_repaint();
+            }
         }
     }
 
@@ -123,7 +126,9 @@ const FireworksDrawingArea = GObject.registerClass({
         this.burst_speed = settings.get_value('fireworks-burst-speed').deep_unpack();
         this.spark_count = settings.get_value('fireworks-spark-count').deep_unpack();
         this.spark_trail = settings.get_value('fireworks-spark-trail').deep_unpack();
-        this.queue_repaint();
+        if (this.get_parent()) {
+            this.queue_repaint();
+        }
     }
 });
 

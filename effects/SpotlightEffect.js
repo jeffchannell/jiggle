@@ -55,7 +55,9 @@ const SpotlightDrawingArea = GObject.registerClass({
     run(x, y) {
         this.spotlight.x = x;
         this.spotlight.y = y;
-        this.queue_repaint();
+        if (this.get_parent()) {
+            this.queue_repaint();
+        }
     }
 
     start() {
@@ -89,7 +91,9 @@ const SpotlightDrawingArea = GObject.registerClass({
         this.spotlight.size = settings.get_value('spotlight-size').deep_unpack();
         this.spotlight.hide_speed = settings.get_value('spotlight-hide-speed').deep_unpack();
         this.spotlight.show_speed = settings.get_value('spotlight-show-speed').deep_unpack();
-        this.queue_repaint();
+        if (this.get_parent()) {
+            this.queue_repaint();
+        }
     }
 });
 
