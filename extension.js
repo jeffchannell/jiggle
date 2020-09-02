@@ -8,15 +8,11 @@
  * Heavily influenced by https://github.com/davidgodzsak/mouse-shake.js
  */
 
-const Gio = imports.gi.Gio;
 const ExtensionUtils = imports.misc.extensionUtils;
-const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
-const St = imports.gi.St;
 
 const Me = ExtensionUtils.getCurrentExtension();
 const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
-const JCursor = Me.imports.cursor;
 const JHistory = Me.imports.history;
 const JSettings = Me.imports.settings;
 // effects

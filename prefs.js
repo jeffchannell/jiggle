@@ -1,6 +1,6 @@
 'use strict';
 
-const {GObject, Gtk} = imports.gi;
+const {Gtk} = imports.gi;
 
 // It's common practice to keep GNOME API and JS imports in separate blocks
 const ExtensionUtils = imports.misc.extensionUtils;
