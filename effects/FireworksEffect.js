@@ -95,8 +95,7 @@ const FireworksDrawingArea = GObject.registerClass({
         let context = this.get_context();
         // fill background with alpha
         context.setSourceRGBA(0, 0, 0, 0);
-        context.rectangle(0, 0, this.width, this.height);
-        context.fill();
+        context.paint();
         this.fireworks.map(firework => firework.trails.map(trail => trail.sparks.map(spark => {
             context.setSourceRGBA(trail.r, trail.g, trail.b, spark.a);
             context.rectangle(spark.x, spark.y, 4, 4);

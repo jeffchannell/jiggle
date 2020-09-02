@@ -38,8 +38,7 @@ const SpotlightDrawingArea = GObject.registerClass({
     _repaint() {
         let context = this.get_context();
         context.setSourceRGBA(0, 0, 0, this.spotlight.opacity);
-        context.rectangle(0, 0, this.width, this.height);
-        context.fill();
+        context.paint();
         context.setOperator(cairo.Operator.CLEAR);
         context.arc(this.spotlight.x, this.spotlight.y, this.spotlight.size, 0, 2*Math.PI);
         context.fill();
