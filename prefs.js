@@ -29,6 +29,7 @@ function buildPrefsWidget() {
     // Cursor Scaling options
     frames[0] = new Gtk.Box({
         orientation: Gtk.Orientation.VERTICAL,
+        border_width: 25,
         spacing: 10,
     });
     frames[0].add(buildSwitcher('use-system', 'Use System Cursor'));
@@ -39,6 +40,7 @@ function buildPrefsWidget() {
     // Fireworks options
     frames[1] = new Gtk.Box({
         orientation: Gtk.Orientation.VERTICAL,
+        border_width: 25,
         spacing: 10,
     });
     frames[1].add(buildHScale('fireworks-burst-speed', 'Burst Speed', 2, 0.25, 1.0));
@@ -48,6 +50,7 @@ function buildPrefsWidget() {
     // Spotlight options
     frames[2] = new Gtk.Box({
         orientation: Gtk.Orientation.VERTICAL,
+        border_width: 25,
         spacing: 10,
     });
     frames[2].add(buildHScale('spotlight-size', 'Size', 0, 64, 300));
