@@ -101,6 +101,7 @@ const FireworksDrawingArea = GObject.registerClass({
             context.rectangle(spark.x, spark.y, 4, 4);
             context.fill();
         })));
+        context.$dispose();
     }
 
     render() {
