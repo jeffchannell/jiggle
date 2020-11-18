@@ -4,7 +4,6 @@
 
 const {cairo, Gdk, GObject, St} = imports.gi;
 
-const Tweener = imports.ui.tweener;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
 
