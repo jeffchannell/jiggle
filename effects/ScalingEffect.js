@@ -2,7 +2,7 @@
 
 const {cairo, Gdk, Gio, GObject, St} = imports.gi;
 
-const Tweener = imports.ui.tweener;
+const Tweener = (function(){let i;try {i=imports.ui.tweener}catch(e){i=imports.tweener.tweener}return i})(); // Gnome 3.38 moved Tweener
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
