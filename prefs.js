@@ -23,8 +23,8 @@ function buildPrefsWidget() {
     });
 
     let effect = settings.get_value('effect').deep_unpack();
-    let effects = ['Cursor Scaling', 'Fireworks', 'Spotlight'];
-    let frames = [null, null, null];
+    let effects = ['Cursor Scaling', 'Fireworks', 'Spotlight', 'Trail'];
+    let frames = [null, null, null, null];
 
     // Cursor Scaling options
     frames[0] = new Gtk.Box({
@@ -56,6 +56,13 @@ function buildPrefsWidget() {
     frames[2].add(buildHScale('spotlight-size', 'Size', 0, 64, 300));
     frames[2].add(buildHScale('spotlight-show-speed', 'Show Speed', 2, 0.1, 1.0));
     frames[2].add(buildHScale('spotlight-hide-speed', 'Hide Speed', 2, 0.1, 1.0));
+
+    // Trail options
+    frames[3] = new Gtk.Box({
+        orientation: Gtk.Orientation.VERTICAL,
+        border_width: 25,
+        spacing: 10,
+    });
 
     // main shake setting
     frame.add(buildHScale('shake-threshold', 'Shake Threshold', 0, 10, 500));
