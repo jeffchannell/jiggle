@@ -25,7 +25,9 @@ if (40 >= shellVersion) {
             super.append(child);
         }
 
-        show_all() {}
+        show_all() {
+            super.show();
+        }
     });
 } else {
     JiggleBox = GObject.registerClass({
