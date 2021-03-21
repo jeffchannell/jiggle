@@ -79,15 +79,16 @@ function buildPrefsWidget() {
     frame.show_all();
 
     // add the frames
-    frames.map(f => frame.add(f.box));
+    frames.map(f => frame.add(f));
     frames[effect].show_all();
 
-    return frame.box;
+    return frame;
 }
 
 function buildHScale(key, labelText, digits, min, max) {
-    let hscale = new Gtk.HScale({
-        visible: true
+    let hscale = new Gtk.Scale({
+        orientation: Gtk.Orientation.HORIZONTAL,
+        visible: true,
     });
     hscale.set_digits(digits);
     hscale.set_range(min, max);
@@ -147,5 +148,5 @@ function newHBox(labelText, widget, stretch)
     hbox.pack_start(buildLabelWidget(labelText), true, true, 0);
     hbox.add(widget);
 
-    return hbox.box;
+    return hbox;
 }
