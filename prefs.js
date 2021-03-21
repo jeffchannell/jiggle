@@ -6,6 +6,7 @@ const {Gtk} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const JSettings = Me.imports.settings;
+const JCompat = Me.imports.compat.prefs;
 
 let settings;
 
@@ -16,7 +17,7 @@ function init() {
 
 // This function is called when the preferences window is first created to build and return a Gtk widget.
 function buildPrefsWidget() {
-    let frame = new Gtk.Box({
+    let frame = new JCompat.JiggleBox({
         orientation: Gtk.Orientation.VERTICAL,
         border_width: 10,
         spacing: 10,
@@ -27,7 +28,7 @@ function buildPrefsWidget() {
     let frames = [null, null, null];
 
     // Cursor Scaling options
-    frames[0] = new Gtk.Box({
+    frames[0] = new JCompat.JiggleBox({
         orientation: Gtk.Orientation.VERTICAL,
         border_width: 25,
         spacing: 10,
@@ -38,7 +39,7 @@ function buildPrefsWidget() {
     frames[0].add(buildHScale('shrink-speed', 'Shrink Speed', 2, 0.1, 1.0));
 
     // Fireworks options
-    frames[1] = new Gtk.Box({
+    frames[1] = new JCompat.JiggleBox({
         orientation: Gtk.Orientation.VERTICAL,
         border_width: 25,
         spacing: 10,
@@ -48,7 +49,7 @@ function buildPrefsWidget() {
     frames[1].add(buildHScale('fireworks-spark-trail', 'Spark Trail', 0, 8, 20));
 
     // Spotlight options
-    frames[2] = new Gtk.Box({
+    frames[2] = new JCompat.JiggleBox({
         orientation: Gtk.Orientation.VERTICAL,
         border_width: 25,
         spacing: 10,
@@ -78,10 +79,10 @@ function buildPrefsWidget() {
     frame.show_all();
 
     // add the frames
-    frames.map(f => frame.add(f));
+    frames.map(f => frame.add(f.box));
     frames[effect].show_all();
 
-    return frame;
+    return frame.box;
 }
 
 function buildHScale(key, labelText, digits, min, max) {
@@ -137,7 +138,7 @@ function buildSwitcher(key, labelText) {
 
 function newHBox(labelText, widget, stretch)
 {
-    let hbox = new Gtk.Box({
+    let hbox = new JCompat.JiggleBox({
         orientation: Gtk.Orientation.HORIZONTAL,
         spacing: 10,
         homogeneous: stretch,
@@ -146,5 +147,5 @@ function newHBox(labelText, widget, stretch)
     hbox.pack_start(buildLabelWidget(labelText), true, true, 0);
     hbox.add(widget);
 
-    return hbox;
+    return hbox.box;
 }
