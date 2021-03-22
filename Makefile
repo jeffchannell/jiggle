@@ -7,11 +7,11 @@ JIGGLE_DEV_DIR := "${HOME}/.local/share/gnome-shell/extensions/jiggle-dev@jeffch
 build:
 	@rm jiggle_${JIGGLE_VERSION}.zip 2> /dev/null || true
 	@zip -r jiggle_${JIGGLE_VERSION}.zip \
-		compat/ \
 		effects/ \
 		icons/ \
 		schemas/ \
 		ui/ \
+		constants.js \
 		cursor.js \
 		extension.js \
 		history.js \
@@ -32,11 +32,11 @@ local:
 	@rm -rvf "${JIGGLE_DEV_DIR}" || true
 	@mkdir -p "${JIGGLE_DEV_DIR}" || true
 	@cp -rv \
-		compat/ \
 		effects/ \
 		icons/ \
 		schemas/ \
 		ui/ \
+		constants.js \
 		cursor.js \
 		extension.js \
 		history.js \
