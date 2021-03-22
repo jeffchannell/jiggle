@@ -10,6 +10,7 @@ build: compile
 		effects/ \
 		icons/ \
 		schemas/ \
+		ui/ \
 		cursor.js \
 		extension.js \
 		history.js \
@@ -34,6 +35,7 @@ local: compile
 		effects/ \
 		icons/ \
 		schemas/ \
+		ui/ \
 		cursor.js \
 		extension.js \
 		history.js \
