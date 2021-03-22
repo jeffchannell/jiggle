@@ -4,7 +4,7 @@ JIGGLE_DIR=$(shell pwd)
 JIGGLE_VERSION ?= latest
 JIGGLE_DEV_DIR := "${HOME}/.local/share/gnome-shell/extensions/jiggle-dev@jeffchannell.com"
 
-build: compile
+build:
 	@rm jiggle_${JIGGLE_VERSION}.zip 2> /dev/null || true
 	@zip -r jiggle_${JIGGLE_VERSION}.zip \
 		compat/ \
@@ -21,13 +21,13 @@ build: compile
 		prefs.js \
 		settings.js
 
-test: compile
+test:
 	@LD_LIBRARY_PATH=/usr/lib/gnome-shell gjs --include-path=. test.js
 
-docker: compile
+docker:
 	@./dockertest.sh
 
-local: compile
+local:
 	@echo "installing locally to ${JIGGLE_DEV_DIR}"
 	@rm -rvf "${JIGGLE_DEV_DIR}" || true
 	@mkdir -p "${JIGGLE_DEV_DIR}" || true
