@@ -6,7 +6,7 @@ const shellVersion = Number(parseInt(imports.misc.config.PACKAGE_VERSION.split('
 
 let JiggleBox;
 
-if (40 >= shellVersion) {
+if (40 <= shellVersion) {
     JiggleBox = GObject.registerClass({
         GTypeName: 'JiggleBox',
     }, class JiggleBox extends Gtk.Box {
