@@ -93,6 +93,7 @@
             <property name="name">effect</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="active">0</property>
             <items>
               <item translatable="yes">Cursor Scaling</item>
               <item translatable="yes">Fireworks</item>
@@ -189,6 +190,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="halign">start</property>
+                <property name="active">True</property>
                 <signal name="state-set" handler="_onSwitchStateSet" swapped="no"/>
               </object>
               <packing>
