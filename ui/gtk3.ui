@@ -90,14 +90,15 @@
         </child>
         <child>
           <object class="GtkComboBoxText" id="effect">
+            <property name="name">effect</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <signal name="changed" handler="_onEffectChanged" swapped="no"/>
             <items>
               <item translatable="yes">Cursor Scaling</item>
               <item translatable="yes">Fireworks</item>
               <item translatable="yes">Spotlight</item>
             </items>
+            <signal name="changed" handler="_onEffectChanged" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -142,6 +143,7 @@
             </child>
             <child>
               <object class="GtkSwitch" id="use-system">
+                <property name="name">use-system</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="halign">start</property>
@@ -183,6 +185,7 @@
             </child>
             <child>
               <object class="GtkSwitch" id="hide-original">
+                <property name="name">hide-original</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="halign">start</property>
@@ -224,15 +227,15 @@
             </child>
             <child>
               <object class="GtkScale" id="growth-speed">
+                <property name="name">growth-speed</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="adjustment">adj-growth-speed</property>
                 <property name="show_fill_level">True</property>
-                <property name="restrict_to_fill_level">False</property>
                 <property name="fill_level">1</property>
                 <property name="round_digits">0</property>
                 <property name="digits">2</property>
-                <signal name="value-changed" handler="_onScaleValueChanged" swapped="no"/>
+                <signal name="value-changed" handler="_onScaleFloatValueChanged" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -270,15 +273,15 @@
             </child>
             <child>
               <object class="GtkScale" id="shrink-speed">
+                <property name="name">shrink-speed</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="adjustment">adj-shrink-speed</property>
                 <property name="show_fill_level">True</property>
-                <property name="restrict_to_fill_level">False</property>
                 <property name="fill_level">1</property>
                 <property name="round_digits">0</property>
                 <property name="digits">2</property>
-                <signal name="value-changed" handler="_onScaleValueChanged" swapped="no"/>
+                <signal name="value-changed" handler="_onScaleFloatValueChanged" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -330,15 +333,15 @@
             </child>
             <child>
               <object class="GtkScale" id="fireworks-burst-speed">
+                <property name="name">fireworks-burst-speed</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="adjustment">adj-fireworks-burst-speed</property>
                 <property name="show_fill_level">True</property>
-                <property name="restrict_to_fill_level">False</property>
                 <property name="fill_level">1</property>
                 <property name="round_digits">0</property>
                 <property name="digits">2</property>
-                <signal name="value-changed" handler="_onScaleValueChanged" swapped="no"/>
+                <signal name="value-changed" handler="_onScaleFloatValueChanged" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -376,15 +379,15 @@
             </child>
             <child>
               <object class="GtkScale" id="fireworks-spark-count">
+                <property name="name">fireworks-burst-count</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="adjustment">adj-fireworks-spark-count</property>
                 <property name="show_fill_level">True</property>
-                <property name="restrict_to_fill_level">False</property>
-                <property name="fill_level">1</property>
+                <property name="fill_level">100</property>
                 <property name="round_digits">0</property>
                 <property name="digits">0</property>
-                <signal name="value-changed" handler="_onScaleValueChanged" swapped="no"/>
+                <signal name="value-changed" handler="_onScaleIntValueChanged" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -422,15 +425,15 @@
             </child>
             <child>
               <object class="GtkScale" id="fireworks-spark-trail">
+                <property name="name">fireworks-burst-trail</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="adjustment">adj-fireworks-spark-trail</property>
                 <property name="show_fill_level">True</property>
-                <property name="restrict_to_fill_level">False</property>
-                <property name="fill_level">1</property>
+                <property name="fill_level">20</property>
                 <property name="round_digits">0</property>
                 <property name="digits">0</property>
-                <signal name="value-changed" handler="_onScaleValueChanged" swapped="no"/>
+                <signal name="value-changed" handler="_onScaleIntValueChanged" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -485,15 +488,15 @@
             </child>
             <child>
               <object class="GtkScale" id="spotlight-size">
+                <property name="name">spotlight-size</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="adjustment">adj-spotlight-size</property>
                 <property name="show_fill_level">True</property>
-                <property name="restrict_to_fill_level">False</property>
-                <property name="fill_level">1</property>
+                <property name="fill_level">300</property>
                 <property name="round_digits">0</property>
                 <property name="digits">0</property>
-                <signal name="value-changed" handler="_onScaleValueChanged" swapped="no"/>
+                <signal name="value-changed" handler="_onScaleIntValueChanged" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -531,15 +534,15 @@
             </child>
             <child>
               <object class="GtkScale" id="spotlight-show-speed">
+                <property name="name">spotlight-show-speed</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="adjustment">adj-spotlight-show-speed</property>
                 <property name="show_fill_level">True</property>
-                <property name="restrict_to_fill_level">False</property>
                 <property name="fill_level">1</property>
                 <property name="round_digits">0</property>
                 <property name="digits">2</property>
-                <signal name="value-changed" handler="_onScaleValueChanged" swapped="no"/>
+                <signal name="value-changed" handler="_onScaleFloatValueChanged" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -577,15 +580,15 @@
             </child>
             <child>
               <object class="GtkScale" id="spotlight-hide-speed">
+                <property name="name">spotlight-hide-speed</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="adjustment">adj-spotlight-hide-speed</property>
                 <property name="show_fill_level">True</property>
-                <property name="restrict_to_fill_level">False</property>
                 <property name="fill_level">1</property>
                 <property name="round_digits">0</property>
                 <property name="digits">2</property>
-                <signal name="value-changed" handler="_onScaleValueChanged" swapped="no"/>
+                <signal name="value-changed" handler="_onScaleFloatValueChanged" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>

@@ -27,25 +27,31 @@ const PrefsWidget = GObject.registerClass({
 
         // set values on the rest of the widgets
         let boxes;
+        let setval = function (b, n, k) {
+            b[n].get_children()[1].set_value(settings.get_value(k).deep_unpack());
+        };
+        let setactive = function (b, n, k) {
+            b[n].get_children()[1].set_active(settings.get_value(k).deep_unpack());
+        };
 
         // Cursor Scaling settings
         boxes = this.frames[Effects.CURSOR_SCALING].get_children();
-        boxes[0].get_children()[1].set_active(settings.get_value('use-system').deep_unpack());
-        boxes[1].get_children()[1].set_active(settings.get_value('hide-original').deep_unpack());
-        boxes[2].get_children()[1].set_value(settings.get_value('growth-speed').deep_unpack());
-        boxes[3].get_children()[1].set_value(settings.get_value('shrink-speed').deep_unpack());
+        setactive(boxes, 0, 'use-system');
+        setactive(boxes, 1, 'hide-original');
+        setval(boxes, 2, 'growth-speed');
+        setval(boxes, 3, 'shrink-speed');
 
         // Fireworks settings
         boxes = this.frames[Effects.FIREWORKS].get_children();
-        boxes[0].get_children()[1].set_value(settings.get_value('fireworks-burst-speed').deep_unpack());
-        boxes[1].get_children()[1].set_value(settings.get_value('fireworks-spark-count').deep_unpack());
-        boxes[2].get_children()[1].set_value(settings.get_value('fireworks-spark-trail').deep_unpack());
+        setval(boxes, 0, 'fireworks-burst-speed');
+        setval(boxes, 1, 'fireworks-spark-count');
+        setval(boxes, 2, 'fireworks-spark-trail');
 
         // Spotlight settings
         boxes = this.frames[Effects.SPOTLIGHT].get_children();
-        boxes[0].get_children()[1].set_value(settings.get_value('spotlight-size').deep_unpack());
-        boxes[1].get_children()[1].set_value(settings.get_value('spotlight-show-speed').deep_unpack());
-        boxes[2].get_children()[1].set_value(settings.get_value('spotlight-hide-speed').deep_unpack());
+        setval(boxes, 0, 'spotlight-size');
+        setval(boxes, 1, 'spotlight-show-speed');
+        setval(boxes, 2, 'spotlight-hide-speed');
 
         this._setActiveEffect(effect);
     }
@@ -57,16 +63,16 @@ const PrefsWidget = GObject.registerClass({
         this._setActiveEffect(effect)
     }
 
-    _onScaleValueChanged(widget) {
-        if (0 === widget.get_digits()) {
-            settings.set_int(key, widget.get_value());
-        } else {
-            settings.set_double(key, widget.get_value());
-        }
+    _onScaleFloatValueChanged(widget) {
+        settings.set_double(widget.get_name(), widget.get_value());
+    }
+
+    _onScaleIntValueChanged(widget) {
+        settings.set_int(widget.get_name(), widget.get_value());
     }
 
     _onSwitchStateSet(widget, state) {
-        settings.set_boolean(key, state);
+        settings.set_boolean(widget.get_name(), state);
         widget.set_active(state);
     }
 
