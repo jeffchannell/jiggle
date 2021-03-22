@@ -5,6 +5,7 @@ const {GObject, Gtk} = imports.gi;
 // It's common practice to keep GNOME API and JS imports in separate blocks
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
+const JConstants = Me.imports.constants;
 const JSettings = Me.imports.settings;
 const {Effects} = Me.imports.effects;
 
@@ -12,7 +13,7 @@ let settings;
 
 const PrefsWidget = GObject.registerClass({
     GTypeName: 'PrefsWidget',
-    Template: Me.dir.get_child('ui').get_child('gtk3.ui').get_uri(),
+    Template: Me.dir.get_child('ui').get_child(JConstants.SHELL_VERSION >= 40 ? 'gtk4.ui' : 'gtk3.ui').get_uri(),
 }, class PrefsWidget extends Gtk.Box {
     _init(params = {}) {
         super._init(params);

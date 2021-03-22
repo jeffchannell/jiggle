@@ -1,5 +1,6 @@
 .PHONY: all build dockertest local test
 
+JIGGLE_DIR=$(shell pwd)
 JIGGLE_VERSION ?= latest
 JIGGLE_DEV_DIR := "${HOME}/.local/share/gnome-shell/extensions/jiggle-dev@jeffchannell.com"
 
@@ -55,5 +56,7 @@ local: compile
 compile:
 	@echo "compiling schemas"
 	@glib-compile-schemas schemas/
+	@docker build -t gtk4-builder-tool -f Dockerfile.gtk4 .
+	@docker run -v "${JIGGLE_DIR}/ui:/home/gtk4/app" --rm -ti gtk4-builder-tool simplify --3to4 gtk3.ui > ui/gtk4.ui
 
 all: test build
