@@ -27,12 +27,9 @@ const PrefsWidget = GObject.registerClass({
 
         // set values on the rest of the widgets
         let boxes;
-        let setval = function (b, n, k) {
-            b[n].get_children()[1].set_value(settings.get_value(k).deep_unpack());
-        };
-        let setactive = function (b, n, k) {
-            b[n].get_children()[1].set_active(settings.get_value(k).deep_unpack());
-        };
+        let doset = (b, n, k, m) => b[n].get_children()[1][m](settings.get_value(k).deep_unpack());
+        let setval = (b, n, k) => doset(b, n, k, 'set_value');
+        let setactive = (b, n, k) => doset(b, n, k, 'set_active');
 
         // Cursor Scaling settings
         boxes = this.frames[Effects.CURSOR_SCALING].get_children();
