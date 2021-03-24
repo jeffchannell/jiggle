@@ -11,61 +11,56 @@ const {Effects} = Me.imports.effects;
 
 let settings;
 
-function gtkChildren(widget) {
-    let children;
-    if (JConstants.IS_GNOME_40) {
-        children = [];
-        for (let child = widget.get_first_child(); child; child = widget.get_next_sibling()) {
-            children.push(child);
-        }
-    } else {
-        children = widget.get_children();
-    }
-
-    return children;
-}
-
 const PrefsWidget = GObject.registerClass({
     GTypeName: 'PrefsWidget',
     Template: Me.dir.get_child('ui').get_child(JConstants.IS_GNOME_40 ? 'gtk4.ui' : 'gtk3.ui').get_uri(),
+    // required to enable reading children from template
+    InternalChildren: [
+        // main effect switch
+        'effect',
+        // effects switcher and children
+        'effect_stack',
+        'jiggle_opts_cursor_scaling',
+        'jiggle_opts_fireworks',
+        'jiggle_opts_spotlight',
+        // Cursor Scaling settings
+        'use_system',
+        'hide_original',
+        'growth_speed',
+        'shrink_speed',
+        // Fireworks settings
+        'fireworks_burst_speed',
+        'fireworks_spark_count',
+        'fireworks_spark_trail',
+        // Spotlight settings
+        'spotlight_size',
+        'spotlight_show_speed',
+        'spotlight_hide_speed',
+    ],
 }, class PrefsWidget extends Gtk.Box {
     _init(params = {}) {
         super._init(params);
 
-        // get the prefs window children - effects box is first, followed by effect boxes
-        let children = gtkChildren(this);
-        this.frames = children.slice(1);
+        let effect = settings.get_value('effect').deep_unpack();
 
         // set the main effect combobox value
-        let effect = settings.get_value('effect').deep_unpack();
-        gtkChildren(children[0])[1].set_active(effect);
-
-        // set values on the rest of the widgets
-        let boxes;
-        let doset = (b, n, k, m) => gtkChildren(b[n])[1][m](settings.get_value(k).deep_unpack());
-        let setval = (b, n, k) => doset(b, n, k, 'set_value');
-        let setactive = (b, n, k) => doset(b, n, k, 'set_active');
-
-        // Cursor Scaling settings
-        boxes = gtkChildren(this.frames[Effects.CURSOR_SCALING]);
-        setactive(boxes, 0, 'use-system');
-        setactive(boxes, 1, 'hide-original');
-        setval(boxes, 2, 'growth-speed');
-        setval(boxes, 3, 'shrink-speed');
-
-        // Fireworks settings
-        boxes = gtkChildren(this.frames[Effects.FIREWORKS]);
-        setval(boxes, 0, 'fireworks-burst-speed');
-        setval(boxes, 1, 'fireworks-spark-count');
-        setval(boxes, 2, 'fireworks-spark-trail');
-
-        // Spotlight settings
-        boxes = gtkChildren(this.frames[Effects.SPOTLIGHT]);
-        setval(boxes, 0, 'spotlight-size');
-        setval(boxes, 1, 'spotlight-show-speed');
-        setval(boxes, 2, 'spotlight-hide-speed');
+        this._effect.set_active(effect);
+        this._use_system.set_active(settings.get_value('use-system').deep_unpack());
+        this._hide_original.set_active(settings.get_value('hide-original').deep_unpack());
+        this._growth_speed.set_value(settings.get_value('growth-speed').deep_unpack());
+        this._shrink_speed.set_value(settings.get_value('shrink-speed').deep_unpack());
+        this._fireworks_burst_speed.set_value(settings.get_value('fireworks-burst-speed').deep_unpack());
+        this._fireworks_spark_count.set_value(settings.get_value('fireworks-spark-count').deep_unpack());
+        this._fireworks_spark_trail.set_value(settings.get_value('fireworks-spark-trail').deep_unpack());
+        this._spotlight_size.set_value(settings.get_value('spotlight-size').deep_unpack());
+        this._spotlight_show_speed.set_value(settings.get_value('spotlight-show-speed').deep_unpack());
+        this._spotlight_hide_speed.set_value(settings.get_value('spotlight-hide-speed').deep_unpack());
 
         this._setActiveEffect(effect);
+    }
+
+    _getGSettingsKeyFromWidgetName(widget) {
+        return widget.get_name().replace(/_/g, '-');
     }
 
     _onEffectChanged(widget) {
@@ -76,24 +71,32 @@ const PrefsWidget = GObject.registerClass({
     }
 
     _onScaleFloatValueChanged(widget) {
-        settings.set_double(widget.get_name(), widget.get_value());
+        settings.set_double(this._getGSettingsKeyFromWidgetName(widget), widget.get_value());
     }
 
     _onScaleIntValueChanged(widget) {
-        settings.set_int(widget.get_name(), widget.get_value());
+        settings.set_int(this._getGSettingsKeyFromWidgetName(widget), widget.get_value());
     }
 
     _onSwitchStateSet(widget, state) {
-        settings.set_boolean(widget.get_name(), state);
+        settings.set_boolean(this._getGSettingsKeyFromWidgetName(widget), state);
         widget.set_active(state);
     }
 
     _setActiveEffect(effect) {
-        // hide each frame, unless it's this one
-        for (let i = 0; i < this.frames.length; i++) {
-            this.frames[i].hide();
+        // https://developer.gnome.org/gtk3/stable/GtkStack.html
+        // https://developer.gnome.org/gtk4/stable/GtkStack.html
+        // Using the stack widget, we can address each "page" by name then use get_template_child() for the form fields.
+        let child = "_jiggle_opts_cursor_scaling";
+        switch (effect) {
+            case Effects.FIREWORKS:
+                child = "_jiggle_opts_fireworks";
+                break;
+            case Effects.SPOTLIGHT:
+                child = "_jiggle_opts_spotlight";
+                break;
         }
-        this.frames[effect].show_all();
+        this._effect_stack.set_visible_child(this[child]);
     }
 });
 

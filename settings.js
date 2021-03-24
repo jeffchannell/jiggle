@@ -19,6 +19,6 @@ function settings()
     );
 
     return new Gio.Settings({
-        settings_schema: gschema.lookup('org.gnome.shell.extensions.jiggle', true)
+        settings_schema: gschema.lookup('com.jeffchannell.jiggle', true)
     });
 }

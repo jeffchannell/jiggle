@@ -1,56 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface domain="com.jeffchannell.jiggle">
   <requires lib="gtk" version="4.0"/>
-  <object class="GtkAdjustment" id="adj-fireworks-burst-speed">
+  <object class="GtkAdjustment" id="adj_fireworks_burst_speed">
     <property name="lower">0.25</property>
     <property name="upper">1</property>
     <property name="value">0.5</property>
     <property name="step_increment">0.01</property>
     <property name="page_increment">0.01</property>
   </object>
-  <object class="GtkAdjustment" id="adj-fireworks-spark-count">
+  <object class="GtkAdjustment" id="adj_fireworks_spark_count">
     <property name="lower">20</property>
     <property name="upper">100</property>
     <property name="value">50</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
   </object>
-  <object class="GtkAdjustment" id="adj-fireworks-spark-trail">
+  <object class="GtkAdjustment" id="adj_fireworks_spark_trail">
     <property name="lower">8</property>
     <property name="upper">20</property>
     <property name="value">12</property>
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
   </object>
-  <object class="GtkAdjustment" id="adj-growth-speed">
+  <object class="GtkAdjustment" id="adj_growth_speed">
     <property name="lower">0.10000000000000001</property>
     <property name="upper">1</property>
     <property name="value">0.5</property>
     <property name="step_increment">0.01</property>
     <property name="page_increment">0.01</property>
   </object>
-  <object class="GtkAdjustment" id="adj-shrink-speed">
+  <object class="GtkAdjustment" id="adj_shrink_speed">
     <property name="lower">0.10000000000000001</property>
     <property name="upper">1</property>
     <property name="value">0.5</property>
     <property name="step_increment">0.01</property>
     <property name="page_increment">0.01</property>
   </object>
-  <object class="GtkAdjustment" id="adj-spotlight-hide-speed">
+  <object class="GtkAdjustment" id="adj_spotlight_hide_speed">
     <property name="lower">0.10000000000000001</property>
     <property name="upper">1</property>
     <property name="value">0.5</property>
     <property name="step_increment">0.01</property>
     <property name="page_increment">0.01</property>
   </object>
-  <object class="GtkAdjustment" id="adj-spotlight-show-speed">
+  <object class="GtkAdjustment" id="adj_spotlight_show_speed">
     <property name="lower">0.10000000000000001</property>
     <property name="upper">1</property>
     <property name="value">0.5</property>
     <property name="step_increment">0.01</property>
     <property name="page_increment">0.01</property>
   </object>
-  <object class="GtkAdjustment" id="adj-spotlight-size">
+  <object class="GtkAdjustment" id="adj_spotlight_size">
     <property name="lower">64</property>
     <property name="upper">300</property>
     <property name="value">90</property>
@@ -92,303 +92,328 @@
       </object>
     </child>
     <child>
-      <object class="GtkBox" id="jiggle-opts-cursor-scaling">
+      <object class="GtkStack" id="effect_stack">
         <property name="can_focus">0</property>
-        <property name="border_width">25</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">10</property>
         <child>
-          <object class="GtkBox">
-            <property name="vexpand">1</property>
-            <property name="can_focus">0</property>
-            <property name="spacing">10</property>
-            <property name="homogeneous">1</property>
-            <child>
-              <object class="GtkLabel">
+          <object class="GtkStackPage">
+            <property name="name">page0</property>
+            <property name="title" translatable="yes">page0</property>
+            <property name="child">
+              <object class="GtkBox" id="jiggle_opts_cursor_scaling">
                 <property name="can_focus">0</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">Use System Cursor</property>
-                <property name="use_markup">1</property>
+                <property name="border_width">25</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="vexpand">1</property>
+                    <property name="can_focus">0</property>
+                    <property name="spacing">10</property>
+                    <property name="homogeneous">1</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Use System Cursor</property>
+                        <property name="use_markup">1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch" id="use_system">
+                        <property name="name">use_system</property>
+                        <property name="halign">start</property>
+                        <signal name="state-set" handler="_onSwitchStateSet" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="vexpand">1</property>
+                    <property name="can_focus">0</property>
+                    <property name="spacing">10</property>
+                    <property name="homogeneous">1</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Hide Original Cursor</property>
+                        <property name="use_markup">1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch" id="hide_original">
+                        <property name="name">hide_original</property>
+                        <property name="halign">start</property>
+                        <property name="active">1</property>
+                        <signal name="state-set" handler="_onSwitchStateSet" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="vexpand">1</property>
+                    <property name="can_focus">0</property>
+                    <property name="spacing">10</property>
+                    <property name="homogeneous">1</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Growth Speed</property>
+                        <property name="use_markup">1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="growth_speed">
+                        <property name="draw-value">1</property>
+                        <property name="name">growth_speed</property>
+                        <property name="adjustment">adj_growth_speed</property>
+                        <property name="show_fill_level">1</property>
+                        <property name="fill_level">1</property>
+                        <property name="round_digits">0</property>
+                        <property name="digits">2</property>
+                        <signal name="value-changed" handler="_onScaleFloatValueChanged" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="vexpand">1</property>
+                    <property name="can_focus">0</property>
+                    <property name="spacing">10</property>
+                    <property name="homogeneous">1</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Shrink Speed</property>
+                        <property name="use_markup">1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="shrink_speed">
+                        <property name="draw-value">1</property>
+                        <property name="name">shrink_speed</property>
+                        <property name="adjustment">adj_shrink_speed</property>
+                        <property name="show_fill_level">1</property>
+                        <property name="fill_level">1</property>
+                        <property name="round_digits">0</property>
+                        <property name="digits">2</property>
+                        <signal name="value-changed" handler="_onScaleFloatValueChanged" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
-            </child>
-            <child>
-              <object class="GtkSwitch" id="use-system">
-                <property name="name">use-system</property>
-                <property name="halign">start</property>
-                <signal name="state-set" handler="_onSwitchStateSet" swapped="no"/>
-              </object>
-            </child>
+            </property>
           </object>
         </child>
         <child>
-          <object class="GtkBox">
-            <property name="vexpand">1</property>
-            <property name="can_focus">0</property>
-            <property name="spacing">10</property>
-            <property name="homogeneous">1</property>
-            <child>
-              <object class="GtkLabel">
+          <object class="GtkStackPage">
+            <property name="name">page1</property>
+            <property name="title" translatable="yes">page1</property>
+            <property name="position">1</property>
+            <property name="child">
+              <object class="GtkBox" id="jiggle_opts_fireworks">
                 <property name="can_focus">0</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">Hide Original Cursor</property>
-                <property name="use_markup">1</property>
+                <property name="border_width">25</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="vexpand">1</property>
+                    <property name="can_focus">0</property>
+                    <property name="spacing">10</property>
+                    <property name="homogeneous">1</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Burst Speed</property>
+                        <property name="use_markup">1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="fireworks_burst_speed">
+                        <property name="draw-value">1</property>
+                        <property name="name">fireworks_burst_speed</property>
+                        <property name="adjustment">adj_fireworks_burst_speed</property>
+                        <property name="show_fill_level">1</property>
+                        <property name="fill_level">1</property>
+                        <property name="round_digits">0</property>
+                        <property name="digits">2</property>
+                        <signal name="value-changed" handler="_onScaleFloatValueChanged" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="vexpand">1</property>
+                    <property name="can_focus">0</property>
+                    <property name="spacing">10</property>
+                    <property name="homogeneous">1</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Spark Count</property>
+                        <property name="use_markup">1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="fireworks_spark_count">
+                        <property name="draw-value">1</property>
+                        <property name="name">fireworks_spark_count</property>
+                        <property name="adjustment">adj_fireworks_spark_count</property>
+                        <property name="show_fill_level">1</property>
+                        <property name="fill_level">100</property>
+                        <property name="round_digits">0</property>
+                        <property name="digits">0</property>
+                        <signal name="value-changed" handler="_onScaleIntValueChanged" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="vexpand">1</property>
+                    <property name="can_focus">0</property>
+                    <property name="spacing">10</property>
+                    <property name="homogeneous">1</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Spark Trail</property>
+                        <property name="use_markup">1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="fireworks_spark_trail">
+                        <property name="draw-value">1</property>
+                        <property name="name">fireworks_spark_trail</property>
+                        <property name="adjustment">adj_fireworks_spark_trail</property>
+                        <property name="show_fill_level">1</property>
+                        <property name="fill_level">20</property>
+                        <property name="round_digits">0</property>
+                        <property name="digits">0</property>
+                        <signal name="value-changed" handler="_onScaleIntValueChanged" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
               </object>
-            </child>
-            <child>
-              <object class="GtkSwitch" id="hide-original">
-                <property name="name">hide-original</property>
-                <property name="halign">start</property>
-                <property name="active">1</property>
-                <signal name="state-set" handler="_onSwitchStateSet" swapped="no"/>
-              </object>
-            </child>
+            </property>
           </object>
         </child>
         <child>
-          <object class="GtkBox">
-            <property name="vexpand">1</property>
-            <property name="can_focus">0</property>
-            <property name="spacing">10</property>
-            <property name="homogeneous">1</property>
-            <child>
-              <object class="GtkLabel">
+          <object class="GtkStackPage">
+            <property name="name">page2</property>
+            <property name="title" translatable="yes">page2</property>
+            <property name="position">2</property>
+            <property name="child">
+              <object class="GtkBox" id="jiggle_opts_spotlight">
                 <property name="can_focus">0</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">Growth Speed</property>
-                <property name="use_markup">1</property>
+                <property name="border_width">25</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="vexpand">1</property>
+                    <property name="can_focus">0</property>
+                    <property name="spacing">10</property>
+                    <property name="homogeneous">1</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Size</property>
+                        <property name="use_markup">1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="spotlight_size">
+                        <property name="draw-value">1</property>
+                        <property name="name">spotlight_size</property>
+                        <property name="adjustment">adj_spotlight_size</property>
+                        <property name="show_fill_level">1</property>
+                        <property name="fill_level">300</property>
+                        <property name="round_digits">0</property>
+                        <property name="digits">0</property>
+                        <signal name="value-changed" handler="_onScaleIntValueChanged" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="vexpand">1</property>
+                    <property name="can_focus">0</property>
+                    <property name="spacing">10</property>
+                    <property name="homogeneous">1</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Show Speed</property>
+                        <property name="use_markup">1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="spotlight_show_speed">
+                        <property name="draw-value">1</property>
+                        <property name="name">spotlight_show_speed</property>
+                        <property name="adjustment">adj_spotlight_show_speed</property>
+                        <property name="show_fill_level">1</property>
+                        <property name="fill_level">1</property>
+                        <property name="round_digits">0</property>
+                        <property name="digits">2</property>
+                        <signal name="value-changed" handler="_onScaleFloatValueChanged" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="vexpand">1</property>
+                    <property name="can_focus">0</property>
+                    <property name="spacing">10</property>
+                    <property name="homogeneous">1</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="can_focus">0</property>
+                        <property name="halign">start</property>
+                        <property name="label" translatable="yes">Hide Speed</property>
+                        <property name="use_markup">1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="spotlight_hide_speed">
+                        <property name="draw-value">1</property>
+                        <property name="name">spotlight_hide_speed</property>
+                        <property name="adjustment">adj_spotlight_hide_speed</property>
+                        <property name="show_fill_level">1</property>
+                        <property name="fill_level">1</property>
+                        <property name="round_digits">0</property>
+                        <property name="digits">2</property>
+                        <signal name="value-changed" handler="_onScaleFloatValueChanged" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
               </object>
-            </child>
-            <child>
-              <object class="GtkScale" id="growth-speed">
-                <property name="draw-value">1</property>
-                <property name="name">growth-speed</property>
-                <property name="adjustment">adj-growth-speed</property>
-                <property name="show_fill_level">1</property>
-                <property name="fill_level">1</property>
-                <property name="round_digits">0</property>
-                <property name="digits">2</property>
-                <signal name="value-changed" handler="_onScaleFloatValueChanged" swapped="no"/>
-              </object>
-            </child>
+            </property>
           </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="vexpand">1</property>
-            <property name="can_focus">0</property>
-            <property name="spacing">10</property>
-            <property name="homogeneous">1</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="can_focus">0</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">Shrink Speed</property>
-                <property name="use_markup">1</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkScale" id="shrink-speed">
-                <property name="draw-value">1</property>
-                <property name="name">shrink-speed</property>
-                <property name="adjustment">adj-shrink-speed</property>
-                <property name="show_fill_level">1</property>
-                <property name="fill_level">1</property>
-                <property name="round_digits">0</property>
-                <property name="digits">2</property>
-                <signal name="value-changed" handler="_onScaleFloatValueChanged" swapped="no"/>
-              </object>
-            </child>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkBox" id="jiggle-opts-fireworks">
-        <property name="can_focus">0</property>
-        <property name="border_width">25</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">10</property>
-        <child>
-          <object class="GtkBox">
-            <property name="vexpand">1</property>
-            <property name="can_focus">0</property>
-            <property name="spacing">10</property>
-            <property name="homogeneous">1</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="can_focus">0</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">Burst Speed</property>
-                <property name="use_markup">1</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkScale" id="fireworks-burst-speed">
-                <property name="draw-value">1</property>
-                <property name="name">fireworks-burst-speed</property>
-                <property name="adjustment">adj-fireworks-burst-speed</property>
-                <property name="show_fill_level">1</property>
-                <property name="fill_level">1</property>
-                <property name="round_digits">0</property>
-                <property name="digits">2</property>
-                <signal name="value-changed" handler="_onScaleFloatValueChanged" swapped="no"/>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="vexpand">1</property>
-            <property name="can_focus">0</property>
-            <property name="spacing">10</property>
-            <property name="homogeneous">1</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="can_focus">0</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">Spark Count</property>
-                <property name="use_markup">1</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkScale" id="fireworks-spark-count">
-                <property name="draw-value">1</property>
-                <property name="name">fireworks-burst-count</property>
-                <property name="adjustment">adj-fireworks-spark-count</property>
-                <property name="show_fill_level">1</property>
-                <property name="fill_level">100</property>
-                <property name="round_digits">0</property>
-                <property name="digits">0</property>
-                <signal name="value-changed" handler="_onScaleIntValueChanged" swapped="no"/>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="vexpand">1</property>
-            <property name="can_focus">0</property>
-            <property name="spacing">10</property>
-            <property name="homogeneous">1</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="can_focus">0</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">Spark Trail</property>
-                <property name="use_markup">1</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkScale" id="fireworks-spark-trail">
-                <property name="draw-value">1</property>
-                <property name="name">fireworks-burst-trail</property>
-                <property name="adjustment">adj-fireworks-spark-trail</property>
-                <property name="show_fill_level">1</property>
-                <property name="fill_level">20</property>
-                <property name="round_digits">0</property>
-                <property name="digits">0</property>
-                <signal name="value-changed" handler="_onScaleIntValueChanged" swapped="no"/>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkBox" id="jiggle-opts-spotlight">
-        <property name="can_focus">0</property>
-        <property name="border_width">25</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">10</property>
-        <child>
-          <object class="GtkBox">
-            <property name="vexpand">1</property>
-            <property name="can_focus">0</property>
-            <property name="spacing">10</property>
-            <property name="homogeneous">1</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="can_focus">0</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">Size</property>
-                <property name="use_markup">1</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkScale" id="spotlight-size">
-                <property name="draw-value">1</property>
-                <property name="name">spotlight-size</property>
-                <property name="adjustment">adj-spotlight-size</property>
-                <property name="show_fill_level">1</property>
-                <property name="fill_level">300</property>
-                <property name="round_digits">0</property>
-                <property name="digits">0</property>
-                <signal name="value-changed" handler="_onScaleIntValueChanged" swapped="no"/>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="vexpand">1</property>
-            <property name="can_focus">0</property>
-            <property name="spacing">10</property>
-            <property name="homogeneous">1</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="can_focus">0</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">Show Speed</property>
-                <property name="use_markup">1</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkScale" id="spotlight-show-speed">
-                <property name="draw-value">1</property>
-                <property name="name">spotlight-show-speed</property>
-                <property name="adjustment">adj-spotlight-show-speed</property>
-                <property name="show_fill_level">1</property>
-                <property name="fill_level">1</property>
-                <property name="round_digits">0</property>
-                <property name="digits">2</property>
-                <signal name="value-changed" handler="_onScaleFloatValueChanged" swapped="no"/>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="vexpand">1</property>
-            <property name="can_focus">0</property>
-            <property name="spacing">10</property>
-            <property name="homogeneous">1</property>
-            <child>
-              <object class="GtkLabel">
-                <property name="can_focus">0</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">Hide Speed</property>
-                <property name="use_markup">1</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkScale" id="spotlight-hide-speed">
-                <property name="draw-value">1</property>
-                <property name="name">spotlight-hide-speed</property>
-                <property name="adjustment">adj-spotlight-hide-speed</property>
-                <property name="show_fill_level">1</property>
-                <property name="fill_level">1</property>
-                <property name="round_digits">0</property>
-                <property name="digits">2</property>
-                <signal name="value-changed" handler="_onScaleFloatValueChanged" swapped="no"/>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <placeholder/>
         </child>
       </object>
     </child>
