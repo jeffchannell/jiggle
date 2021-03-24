@@ -13,13 +13,21 @@ let settings;
 
 const PrefsWidget = GObject.registerClass({
     GTypeName: 'PrefsWidget',
-    Template: Me.dir.get_child('ui').get_child(JConstants.SHELL_VERSION >= 40 ? 'gtk4.ui' : 'gtk3.ui').get_uri(),
+    Template: Me.dir.get_child('ui').get_child(JConstants.IS_GNOME_40 ? 'gtk4.ui' : 'gtk3.ui').get_uri(),
 }, class PrefsWidget extends Gtk.Box {
     _init(params = {}) {
         super._init(params);
 
         // get the prefs window children - effects box is first, followed by effect boxes
-        let children = this.get_children();
+        let children;
+        if (JConstants.IS_GNOME_40) {
+            children = [];
+            for (let child = this.get_first_child(); child; child = this.get_next_sibling()) {
+                children.push(child);
+            }
+        } else {
+            children = this.get_children();
+        }
         this.frames = children.slice(1);
 
         // set the main effect combobox value
