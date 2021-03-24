@@ -1,6 +1,6 @@
 'use strict';
 
-const {GObject, Gtk} = imports.gi;
+const {GObject, Gdk, Gtk} = imports.gi;
 
 // It's common practice to keep GNOME API and JS imports in separate blocks
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -9,10 +9,20 @@ const JConstants = Me.imports.constants;
 const JSettings = Me.imports.settings;
 const {Effects} = Me.imports.effects;
 
+let provider = new Gtk.CssProvider();
+
+provider.load_from_path(Me.dir.get_path() + '/prefs.css');
+if (JConstants.IS_GNOME_40) {
+    Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+} else {
+    Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+}
+
 let settings;
 
 const PrefsWidget = GObject.registerClass({
     GTypeName: 'PrefsWidget',
+    CssName: 'PrefsWidget',
     Template: Me.dir.get_child('ui').get_child(JConstants.IS_GNOME_40 ? 'gtk4.ui' : 'gtk3.ui').get_uri(),
     // required to enable reading children from template
     InternalChildren: [

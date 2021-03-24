@@ -18,6 +18,7 @@ build:
 		LICENSE.txt \
 		math.js \
 		metadata.json \
+		prefs.css \
 		prefs.js \
 		settings.js
 
@@ -43,6 +44,7 @@ local:
 		LICENSE.txt \
 		math.js \
 		metadata.json \
+		prefs.css \
 		prefs.js \
 		settings.js \
 		"${JIGGLE_DEV_DIR}"

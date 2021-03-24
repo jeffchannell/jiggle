@@ -62,16 +62,11 @@
   <template class="PrefsWidget" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="margin_left">10</property>
-    <property name="margin_right">10</property>
-    <property name="margin_top">10</property>
-    <property name="margin_bottom">10</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="spacing">10</property>
         <property name="homogeneous">True</property>
         <child>
           <object class="GtkLabel">
@@ -122,14 +117,11 @@
           <object class="GtkBox" id="jiggle_opts_cursor_scaling">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="border_width">25</property>
             <property name="orientation">vertical</property>
-            <property name="spacing">10</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="spacing">10</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel">
@@ -171,7 +163,6 @@
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="spacing">10</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel">
@@ -214,7 +205,6 @@
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="spacing">10</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel">
@@ -260,7 +250,6 @@
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="spacing">10</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel">
@@ -312,14 +301,11 @@
           <object class="GtkBox" id="jiggle_opts_fireworks">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="border_width">25</property>
             <property name="orientation">vertical</property>
-            <property name="spacing">10</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="spacing">10</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel">
@@ -365,7 +351,6 @@
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="spacing">10</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel">
@@ -411,7 +396,6 @@
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="spacing">10</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel">
@@ -467,14 +451,11 @@
           <object class="GtkBox" id="jiggle_opts_spotlight">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="border_width">25</property>
             <property name="orientation">vertical</property>
-            <property name="spacing">10</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="spacing">10</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel">
@@ -520,7 +501,6 @@
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="spacing">10</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel">
@@ -566,7 +546,6 @@
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="spacing">10</property>
                 <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkLabel">

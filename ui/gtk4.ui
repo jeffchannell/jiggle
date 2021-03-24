@@ -59,13 +59,10 @@
   </object>
   <template class="PrefsWidget" parent="GtkBox">
     <property name="can_focus">0</property>
-    <property name="margin-start">10</property>
-    <property name="margin-end">10</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkBox">
         <property name="can_focus">0</property>
-        <property name="spacing">10</property>
         <property name="homogeneous">1</property>
         <child>
           <object class="GtkLabel">
@@ -100,12 +97,10 @@
               <object class="GtkBox" id="jiggle_opts_cursor_scaling">
                 <property name="can_focus">0</property>
                 <property name="orientation">vertical</property>
-                <property name="spacing">10</property>
                 <child>
                   <object class="GtkBox">
                     <property name="vexpand">1</property>
                     <property name="can_focus">0</property>
-                    <property name="spacing">10</property>
                     <property name="homogeneous">1</property>
                     <child>
                       <object class="GtkLabel">
@@ -128,7 +123,6 @@
                   <object class="GtkBox">
                     <property name="vexpand">1</property>
                     <property name="can_focus">0</property>
-                    <property name="spacing">10</property>
                     <property name="homogeneous">1</property>
                     <child>
                       <object class="GtkLabel">
@@ -152,7 +146,6 @@
                   <object class="GtkBox">
                     <property name="vexpand">1</property>
                     <property name="can_focus">0</property>
-                    <property name="spacing">10</property>
                     <property name="homogeneous">1</property>
                     <child>
                       <object class="GtkLabel">
@@ -180,7 +173,6 @@
                   <object class="GtkBox">
                     <property name="vexpand">1</property>
                     <property name="can_focus">0</property>
-                    <property name="spacing">10</property>
                     <property name="homogeneous">1</property>
                     <child>
                       <object class="GtkLabel">
@@ -216,12 +208,10 @@
               <object class="GtkBox" id="jiggle_opts_fireworks">
                 <property name="can_focus">0</property>
                 <property name="orientation">vertical</property>
-                <property name="spacing">10</property>
                 <child>
                   <object class="GtkBox">
                     <property name="vexpand">1</property>
                     <property name="can_focus">0</property>
-                    <property name="spacing">10</property>
                     <property name="homogeneous">1</property>
                     <child>
                       <object class="GtkLabel">
@@ -249,7 +239,6 @@
                   <object class="GtkBox">
                     <property name="vexpand">1</property>
                     <property name="can_focus">0</property>
-                    <property name="spacing">10</property>
                     <property name="homogeneous">1</property>
                     <child>
                       <object class="GtkLabel">
@@ -277,7 +266,6 @@
                   <object class="GtkBox">
                     <property name="vexpand">1</property>
                     <property name="can_focus">0</property>
-                    <property name="spacing">10</property>
                     <property name="homogeneous">1</property>
                     <child>
                       <object class="GtkLabel">
@@ -316,12 +304,10 @@
               <object class="GtkBox" id="jiggle_opts_spotlight">
                 <property name="can_focus">0</property>
                 <property name="orientation">vertical</property>
-                <property name="spacing">10</property>
                 <child>
                   <object class="GtkBox">
                     <property name="vexpand">1</property>
                     <property name="can_focus">0</property>
-                    <property name="spacing">10</property>
                     <property name="homogeneous">1</property>
                     <child>
                       <object class="GtkLabel">
@@ -349,7 +335,6 @@
                   <object class="GtkBox">
                     <property name="vexpand">1</property>
                     <property name="can_focus">0</property>
-                    <property name="spacing">10</property>
                     <property name="homogeneous">1</property>
                     <child>
                       <object class="GtkLabel">
@@ -377,7 +362,6 @@
                   <object class="GtkBox">
                     <property name="vexpand">1</property>
                     <property name="can_focus">0</property>
-                    <property name="spacing">10</property>
                     <property name="homogeneous">1</property>
                     <child>
                       <object class="GtkLabel">
