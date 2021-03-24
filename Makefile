@@ -1,30 +1,34 @@
 .PHONY: all build dockertest local test
 
+JIGGLE_DIR=$(shell pwd)
 JIGGLE_VERSION ?= latest
 JIGGLE_DEV_DIR := "${HOME}/.local/share/gnome-shell/extensions/jiggle-dev@jeffchannell.com"
 
-build: compile
+build:
 	@rm jiggle_${JIGGLE_VERSION}.zip 2> /dev/null || true
 	@zip -r jiggle_${JIGGLE_VERSION}.zip \
 		effects/ \
 		icons/ \
 		schemas/ \
+		ui/ \
+		constants.js \
 		cursor.js \
 		extension.js \
 		history.js \
 		LICENSE.txt \
 		math.js \
 		metadata.json \
+		prefs.css \
 		prefs.js \
 		settings.js
 
-test: compile
+test:
 	@LD_LIBRARY_PATH=/usr/lib/gnome-shell gjs --include-path=. test.js
 
-docker: compile
+docker:
 	@./dockertest.sh
 
-local: compile
+local:
 	@echo "installing locally to ${JIGGLE_DEV_DIR}"
 	@rm -rvf "${JIGGLE_DEV_DIR}" || true
 	@mkdir -p "${JIGGLE_DEV_DIR}" || true
@@ -32,12 +36,15 @@ local: compile
 		effects/ \
 		icons/ \
 		schemas/ \
+		ui/ \
+		constants.js \
 		cursor.js \
 		extension.js \
 		history.js \
 		LICENSE.txt \
 		math.js \
 		metadata.json \
+		prefs.css \
 		prefs.js \
 		settings.js \
 		"${JIGGLE_DEV_DIR}"
@@ -51,5 +58,10 @@ local: compile
 compile:
 	@echo "compiling schemas"
 	@glib-compile-schemas schemas/
+	@docker build -t gtk4-builder-tool -f Dockerfile.gtk4 .
+	@docker run -v "${JIGGLE_DIR}/ui:/home/gtk4/app" --rm -ti gtk4-builder-tool simplify --3to4 gtk3.ui |\
+		grep -v '<property name="position"' |\
+		grep -v '<property name="margin_' |\
+		grep -v '<property name="border_width"' > ui/gtk4.ui
 
 all: test build

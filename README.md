@@ -6,6 +6,13 @@ Jiggle is a Gnome Shell extension that highlights the cursor position when the m
 
 ## Building
 
+Tools required:
+
+* make
+* docker
+* bash
+* glib-compile-schemas
+
 ```bash
 make
 ```
