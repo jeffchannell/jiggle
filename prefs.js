@@ -11,6 +11,20 @@ const {Effects} = Me.imports.effects;
 
 let settings;
 
+function gtkChildren(widget) {
+    let children;
+    if (JConstants.IS_GNOME_40) {
+        children = [];
+        for (let child = widget.get_first_child(); child; child = widget.get_next_sibling()) {
+            children.push(child);
+        }
+    } else {
+        children = widget.get_children();
+    }
+
+    return children;
+}
+
 const PrefsWidget = GObject.registerClass({
     GTypeName: 'PrefsWidget',
     Template: Me.dir.get_child('ui').get_child(JConstants.IS_GNOME_40 ? 'gtk4.ui' : 'gtk3.ui').get_uri(),
@@ -19,42 +33,34 @@ const PrefsWidget = GObject.registerClass({
         super._init(params);
 
         // get the prefs window children - effects box is first, followed by effect boxes
-        let children;
-        if (JConstants.IS_GNOME_40) {
-            children = [];
-            for (let child = this.get_first_child(); child; child = this.get_next_sibling()) {
-                children.push(child);
-            }
-        } else {
-            children = this.get_children();
-        }
+        let children = gtkChildren(this);
         this.frames = children.slice(1);
 
         // set the main effect combobox value
         let effect = settings.get_value('effect').deep_unpack();
-        children[0].get_children()[1].set_active(effect);
+        gtkChildren(children[0])[1].set_active(effect);
 
         // set values on the rest of the widgets
         let boxes;
-        let doset = (b, n, k, m) => b[n].get_children()[1][m](settings.get_value(k).deep_unpack());
+        let doset = (b, n, k, m) => gtkChildren(b[n])[1][m](settings.get_value(k).deep_unpack());
         let setval = (b, n, k) => doset(b, n, k, 'set_value');
         let setactive = (b, n, k) => doset(b, n, k, 'set_active');
 
         // Cursor Scaling settings
-        boxes = this.frames[Effects.CURSOR_SCALING].get_children();
+        boxes = gtkChildren(this.frames[Effects.CURSOR_SCALING]);
         setactive(boxes, 0, 'use-system');
         setactive(boxes, 1, 'hide-original');
         setval(boxes, 2, 'growth-speed');
         setval(boxes, 3, 'shrink-speed');
 
         // Fireworks settings
-        boxes = this.frames[Effects.FIREWORKS].get_children();
+        boxes = gtkChildren(this.frames[Effects.FIREWORKS]);
         setval(boxes, 0, 'fireworks-burst-speed');
         setval(boxes, 1, 'fireworks-spark-count');
         setval(boxes, 2, 'fireworks-spark-trail');
 
         // Spotlight settings
-        boxes = this.frames[Effects.SPOTLIGHT].get_children();
+        boxes = gtkChildren(this.frames[Effects.SPOTLIGHT]);
         setval(boxes, 0, 'spotlight-size');
         setval(boxes, 1, 'spotlight-show-speed');
         setval(boxes, 2, 'spotlight-hide-speed');
