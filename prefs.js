@@ -84,19 +84,16 @@ const PrefsWidget = GObject.registerClass({
     }
 
     _setActiveEffect(effect) {
-        // https://developer.gnome.org/gtk3/stable/GtkStack.html
-        // https://developer.gnome.org/gtk4/stable/GtkStack.html
-        // Using the stack widget, we can address each "page" by name then use get_template_child() for the form fields.
-        let child = "_jiggle_opts_cursor_scaling";
+        let child = "cursor_scaling";
         switch (effect) {
             case Effects.FIREWORKS:
-                child = "_jiggle_opts_fireworks";
+                child = "fireworks";
                 break;
             case Effects.SPOTLIGHT:
-                child = "_jiggle_opts_spotlight";
+                child = "spotlight";
                 break;
         }
-        this._effect_stack.set_visible_child(this[child]);
+        this._effect_stack.set_visible_child(this["_jiggle_opts_"+child]);
     }
 });
 
