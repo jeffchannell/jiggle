@@ -61,8 +61,6 @@
     <property name="can_focus">0</property>
     <property name="margin-start">10</property>
     <property name="margin-end">10</property>
-    <property name="margin_top">10</property>
-    <property name="margin_bottom">10</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkBox">
@@ -101,7 +99,6 @@
             <property name="child">
               <object class="GtkBox" id="jiggle_opts_cursor_scaling">
                 <property name="can_focus">0</property>
-                <property name="border_width">25</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">10</property>
                 <child>
@@ -215,11 +212,9 @@
           <object class="GtkStackPage">
             <property name="name">page1</property>
             <property name="title" translatable="yes">page1</property>
-            <property name="position">1</property>
             <property name="child">
               <object class="GtkBox" id="jiggle_opts_fireworks">
                 <property name="can_focus">0</property>
-                <property name="border_width">25</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">10</property>
                 <child>
@@ -317,11 +312,9 @@
           <object class="GtkStackPage">
             <property name="name">page2</property>
             <property name="title" translatable="yes">page2</property>
-            <property name="position">2</property>
             <property name="child">
               <object class="GtkBox" id="jiggle_opts_spotlight">
                 <property name="can_focus">0</property>
-                <property name="border_width">25</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">10</property>
                 <child>

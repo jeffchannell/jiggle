@@ -57,6 +57,9 @@ compile:
 	@echo "compiling schemas"
 	@glib-compile-schemas schemas/
 	@docker build -t gtk4-builder-tool -f Dockerfile.gtk4 .
-	@docker run -v "${JIGGLE_DIR}/ui:/home/gtk4/app" --rm -ti gtk4-builder-tool simplify --3to4 gtk3.ui > ui/gtk4.ui
+	@docker run -v "${JIGGLE_DIR}/ui:/home/gtk4/app" --rm -ti gtk4-builder-tool simplify --3to4 gtk3.ui |\
+		grep -v '<property name="position"' |\
+		grep -v '<property name="margin_' |\
+		grep -v '<property name="border_width"' > ui/gtk4.ui
 
 all: test build
