@@ -1,0 +1,12 @@
+PrefsWidget {
+    margin: 10px;
+}
+
+PrefsWidget > box, PrefsWidget stack > box > box {
+    padding: 10px;
+}
+
+PrefsWidget stack > box {
+    padding-left: 25px;
+    padding-right: 25px;
+}
