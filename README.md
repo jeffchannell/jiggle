@@ -55,7 +55,15 @@ Feel like building Jiggle from sources? Keep reading...
 
 ### Anatomy Of An Effect
 
-TODO
+Jiggle effects use duck typing, and effects are expected to have the following methods:
+
+| Method | Description |
+|:---|:---|
+| `render()` | Executed in a timed loop, for repainting the screen. |
+| `run(x, y)` | Executed when the cursor moves, with the x and y screen coordinates. |
+| `start()` | Executed when jiggling is first detected. |
+| `stop()` | Executed when jiggling is no longer detected. |
+| `update(settings)` | Executed if any of the preferences are changed. `settings` is a `Gio.Settings` instance. |
 
 ### Building
 
