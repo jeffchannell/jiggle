@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface domain="com.jeffchannell.jiggle">
   <requires lib="gtk" version="4.0"/>
+  <object class="GtkAdjustment" id="adj_shake_threshold">
+    <property name="lower">10</property>
+    <property name="upper">500</property>
+    <property name="value">180</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">1</property>
+  </object>
   <object class="GtkAdjustment" id="adj_fireworks_burst_speed">
     <property name="lower">0.25</property>
     <property name="upper">1</property>
@@ -82,6 +89,32 @@
               <item translatable="yes">Spotlight</item>
             </items>
             <signal name="changed" handler="_onEffectChanged" swapped="no"/>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="can_focus">0</property>
+        <property name="homogeneous">1</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="can_focus">0</property>
+            <property name="halign">start</property>
+            <property name="label" translatable="yes">Shake Threshold</property>
+            <property name="use_markup">1</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScale" id="shake_threshold">
+            <property name="draw-value">1</property>
+            <property name="name">shake_threshold</property>
+            <property name="adjustment">adj_shake_threshold</property>
+            <property name="show_fill_level">1</property>
+            <property name="fill_level">500</property>
+            <property name="round_digits">0</property>
+            <property name="digits">0</property>
+            <signal name="value-changed" handler="_onScaleIntValueChanged" swapped="no"/>
           </object>
         </child>
       </object>

@@ -26,8 +26,9 @@ const PrefsWidget = GObject.registerClass({
     Template: Me.dir.get_child('ui').get_child(JConstants.IS_GNOME_40 ? 'gtk4.ui' : 'gtk3.ui').get_uri(),
     // required to enable reading children from template
     InternalChildren: [
-        // main effect switch
+        // main settings
         'effect',
+        'shake_threshold',
         // effects switcher and children
         'effect_stack',
         'jiggle_opts_cursor_scaling',
@@ -55,6 +56,7 @@ const PrefsWidget = GObject.registerClass({
 
         // set the main effect combobox value
         this._effect.set_active(effect);
+        this._shake_threshold.set_value(settings.get_value('shake-threshold').deep_unpack());
         this._use_system.set_active(settings.get_value('use-system').deep_unpack());
         this._hide_original.set_active(settings.get_value('hide-original').deep_unpack());
         this._growth_speed.set_value(settings.get_value('growth-speed').deep_unpack());
