@@ -125,7 +125,7 @@
         <child>
           <object class="GtkStackPage">
             <property name="name">page0</property>
-            <property name="title" translatable="yes">page0</property>
+            <property name="title">page0</property>
             <property name="child">
               <object class="GtkBox" id="jiggle_opts_cursor_scaling">
                 <property name="can_focus">0</property>
@@ -236,7 +236,7 @@
         <child>
           <object class="GtkStackPage">
             <property name="name">page1</property>
-            <property name="title" translatable="yes">page1</property>
+            <property name="title">page1</property>
             <property name="child">
               <object class="GtkBox" id="jiggle_opts_fireworks">
                 <property name="can_focus">0</property>
@@ -332,7 +332,7 @@
         <child>
           <object class="GtkStackPage">
             <property name="name">page2</property>
-            <property name="title" translatable="yes">page2</property>
+            <property name="title">page2</property>
             <property name="child">
               <object class="GtkBox" id="jiggle_opts_spotlight">
                 <property name="can_focus">0</property>

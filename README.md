@@ -74,19 +74,40 @@ Tools required:
 * bash
 * glib-compile-schemas
 * glade
+* xgettext
 
 ```bash
 make
 ```
 
-### Recompiling the Settings Schema and Preferences UI
+### Recompiling the Settings Schema, Translations, and Preferences UI
+
+All of these can be done in one command:
+
+```bash
+make compile
+```
+
+#### Settings Schema
+
+```bash
+make schema
+```
+
+#### Translations
+
+```bash
+make po
+```
+
+#### Preferences UI
 
 Any changes to the settings or UI xml will require recompilation.
 
 **DO NOT** edit [ui/gtk4.ui](ui/gtk4.ui) directly, as it is generated from [ui/gtk3.ui](ui/gtk3.ui)!!!
 
 ```bash
-make compile
+make ui
 ```
 
 ### Testing

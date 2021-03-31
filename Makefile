@@ -1,9 +1,9 @@
-.PHONY: all build dockertest local test
+.PHONY: all build docker docker_centos docker_debian compile po schemas ui local test
 
 JIGGLE_DIR=$(shell pwd)
 JIGGLE_VERSION ?= latest
 JIGGLE_DEV_DIR := "${HOME}/.local/share/gnome-shell/extensions/jiggle-dev@jeffchannell.com"
-JIGGLE_PKG_LIST := effects/ icons/ schemas/ ui/ constants.js cursor.js extension.js history.js LICENSE.txt math.js metadata.json prefs.css prefs.js settings.js
+JIGGLE_PKG_LIST := effects/ icons/ po/ schemas/ ui/ constants.js cursor.js extension.js history.js LICENSE.txt math.js metadata.json prefs.css prefs.js settings.js
 
 build:
 	@rm jiggle_${JIGGLE_VERSION}.zip 2> /dev/null || true
@@ -44,9 +44,17 @@ local:
 		-e 's/"version": ".*"/"version": "jiggle-dev"/' \
 		metadata.json > "${JIGGLE_DEV_DIR}/metadata.json"
 
-compile:
+compile: po schemas ui
+
+po:
+	xgettext -L Glade -o po/src.pot ui/gtk3.ui
+
+schemas:
 	@echo "compiling schemas"
 	@glib-compile-schemas schemas/
+
+ui:
+	@echo "compiling ui"
 	@docker build -t gtk4-builder-tool -f Dockerfile.gtk4 .
 	@docker run -v "${JIGGLE_DIR}/ui:/home/gtk4/app" --rm -ti gtk4-builder-tool simplify --3to4 gtk3.ui |\
 		grep -v '<property name="position"' |\

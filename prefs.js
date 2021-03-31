@@ -111,6 +111,7 @@ const PrefsWidget = GObject.registerClass({
 
 // Like `extension.js` this is used for any one-time setup like translations.
 function init() {
+    ExtensionUtils.initTranslations(Me.metadata.uuid);
     settings = JSettings.settings();
 }
 
