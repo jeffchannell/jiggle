@@ -42,6 +42,7 @@ const SpotlightDrawingArea = GObject.registerClass({
         context.setOperator(cairo.Operator.CLEAR);
         context.arc(this.spotlight.x, this.spotlight.y, this.spotlight.size, 0, 2*Math.PI);
         context.fill();
+        context.$dispose();
     }
 
     render() {
