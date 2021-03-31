@@ -33,4 +33,11 @@ Multiple systems can be tested via Docker:
 make docker
 ```
 
+Or, test a single system:
+
+```bash
+make docker_centos
+make docker_debian
+```
+
 `© 2020 Jeff Channell`
