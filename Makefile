@@ -47,7 +47,13 @@ local:
 compile: po schemas ui
 
 po:
-	xgettext -L Glade -o po/src.pot ui/gtk3.ui
+	xgettext -j \
+		--copyright-holder='Jeff Channell' \
+		--package-name=Jiggle \
+		--package-version="${JIGGLE_VERSION}" \
+		-L Glade \
+		-o po/src.pot \
+		ui/gtk3.ui
 
 schemas:
 	@echo "compiling schemas"
