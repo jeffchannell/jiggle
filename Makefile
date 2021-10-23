@@ -12,14 +12,14 @@ build:
 test:
 	@LD_LIBRARY_PATH=/usr/lib/gnome-shell gjs --include-path=. test.js
 
-docker: docker_centos docker_debian
+docker: docker_centos docker_debian docker_fedora
 
 docker_centos:
 	@for v in 7 8 ; do \
 		echo "===================" ; \
 		echo "Testing in CentOS $$v" ; \
 		echo "===================" ; \
-		docker build -t jiggle_centos_$$v -f Dockerfile.centos . --build-arg version=$$v > /dev/null 2>&1 ; \
+		DOCKER_BUILDKIT=1 docker build -t jiggle_centos_$$v -f Dockerfile.rpm . --build-arg version=$$v --build-arg distro=centos ; \
 		docker run --rm -ti jiggle_centos_$$v ; \
 	done
 
@@ -28,8 +28,17 @@ docker_debian:
 		echo "==========================" ; \
 		echo "Testing in Debian $$v" ; \
 		echo "==========================" ; \
-		docker build -t jiggle_debian_$$v -f Dockerfile.debian . --build-arg version=$$v > /dev/null 2>&1 ; \
+		DOCKER_BUILDKIT=1 docker build -t jiggle_debian_$$v -f Dockerfile.debian . --build-arg version=$$v ; \
 		docker run --rm -ti jiggle_debian_$$v ; \
+	done
+
+docker_fedora:
+	@for v in 33 34 ; do \
+		echo "====================" ; \
+		echo "Testing in Fedora $$v" ; \
+		echo "====================" ; \
+		DOCKER_BUILDKIT=1 docker build -t jiggle_fedora_$$v -f Dockerfile.rpm . --build-arg version=$$v --build-arg distro=fedora ; \
+		docker run --rm -ti jiggle_fedora_$$v ; \
 	done
 
 local:
