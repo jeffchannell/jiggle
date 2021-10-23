@@ -95,6 +95,6 @@ const SpotlightDrawingArea = GObject.registerClass({
     }
 });
 
-function new_spotlight() {
+function new_effect() {
     return new SpotlightDrawingArea({visible: true, x: 0, y: 0});
 }

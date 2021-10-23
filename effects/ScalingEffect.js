@@ -126,7 +126,7 @@ const ScalingIcon = GObject.registerClass({
     }
 });
 
-function new_scaling() {
+function new_effect() {
     return new ScalingIcon({
         visible: true,
     });

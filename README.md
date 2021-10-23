@@ -65,6 +65,8 @@ Jiggle effects use duck typing, and effects are expected to have the following m
 | `stop()` | Executed when jiggling is no longer detected. |
 | `update(settings)` | Executed if any of the preferences are changed. `settings` is a `Gio.Settings` instance. |
 
+In addition, each effect package should also implement a `new_effect` function that returns a new instance of the effect.
+
 ### Building
 
 Tools required:

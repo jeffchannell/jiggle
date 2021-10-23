@@ -151,6 +151,6 @@ const FireworksDrawingArea = GObject.registerClass({
     }
 });
 
-function new_fireworks() {
+function new_effect() {
     return new FireworksDrawingArea({visible: true, x: 0, y: 0});
 }

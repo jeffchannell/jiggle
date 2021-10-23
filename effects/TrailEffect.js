@@ -110,6 +110,6 @@ const TrailEffect = class TrailEffect {
     }
 };
 
-function new_trail() {
+function new_effect() {
     return new TrailEffect();
 }
