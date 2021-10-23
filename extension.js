@@ -99,21 +99,25 @@ function update() {
         let newEffectID = settings.get_value('effect').deep_unpack();
         // this is a new effect setting - clean up the old effect and add the new one
         if (effectID !== newEffectID) {
+            let effectDuck;
             // TODO clean up the old effect
             switch (effectID = newEffectID) {
             case Effects.TRAIL:
-                effect = TrailEffect.new_trail();
+                effectDuck = TrailEffect;
                 break;
             case Effects.FIREWORKS:
-                effect = FireworksEffect.new_fireworks();
+                effectDuck = FireworksEffect;
                 break;
             case Effects.SPOTLIGHT:
-                effect = SpotlightEffect.new_spotlight();
+                effectDuck = SpotlightEffect;
                 break;
             case Effects.CURSOR_SCALING:
             default:
-                effect = ScalingEffect.new_scaling();
+                effectDuck = ScalingEffect;
                 break;
+            }
+            if (effectDuck) {
+                effect = effectDuck.new_effect();
             }
         }
         if (effect) {
