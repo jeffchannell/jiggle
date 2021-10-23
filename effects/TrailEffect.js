@@ -2,7 +2,7 @@
 
 const {Gdk, GObject, St} = imports.gi;
 
-const Tweener = imports.ui.tweener;
+const Tweener = (function(){let i;try {i=imports.ui.tweener}catch(e){i=imports.tweener.tweener}return i})(); // Gnome 3.38
 const Main = imports.ui.main;
 
 const TrailIcon = GObject.registerClass({
@@ -33,11 +33,11 @@ const TrailIcon = GObject.registerClass({
 
 const TrailEffect = class TrailEffect {
     constructor() {
+        this.count = 0;
         this.icons = [];
         this.icon = null;
         this.size = 24;
-        this.xhot = 0;
-        this.yhot = 0;
+        this.speed = 2;
         this.x = 0;
         this.y = 0;
 
@@ -51,14 +51,15 @@ const TrailEffect = class TrailEffect {
     }
 
     render() {
-        if (this.icon) {
+        if (this.icon && (++this.count === this.speed)) {
+            this.count = 0;
             this.icons.push(new TrailIcon({
                 gicon: this.icon,
                 height: this.size,
                 visible: true,
                 width: this.size,
-                x: this.x - this.xhot,
-                y: this.y - this.yhot,
+                x: this.x,
+                y: this.y,
             }));
         }
     }
@@ -70,48 +71,42 @@ const TrailEffect = class TrailEffect {
         // remove any completed icons
         this.icons.filter((i) => !i.complete);
 
-        // // attempt to load the icon - this will probably fail a few times on login ??
-        // if (!this.icon) {
-        //     let xhot = 6;
-        //     let yhot = 4;
-        //     let cursor;
-    
-        //     // attempt to get the system cursor for the first time
-        //     try {
-        //         let display = Gdk.Display.get_default();
-        //         cursor = Gdk.Cursor.new_from_name(display, 'arrow');
-        //         let image = cursor.get_image();
-                
-        //         this.size = image.get_width();
-        //         this.icon = image;
-        //     } catch (err) {
-        //         logError(err);
-        //         this.icon = null;
-    
-        //         return;
-        //     }
-    
-        //     // try to get the correct offset
-        //     if (cursor) {
-        //         try {
-        //             let surface = cursor.get_surface();
-        //             xhot = surface[2];
-        //             yhot = surface[1];
-        //         } catch (err) {
-        //             logError(err);
-        //         }
-        //     }
+        let cursor;
 
-        //     this.xhot = xhot;
-        //     this.yhot = yhot;
-        // }
+        // attempt to get the system cursor for the first time
+        try {
+            let display = Gdk.Display.get_default();
+            cursor = Gdk.Cursor.new_from_name(display, 'arrow');
+            let image = cursor.get_image();
+            
+            this.size = image.get_width();
+            this.icon = image;
+        } catch (err) {
+            logError(err);
+            this.icon = null;
+
+            return;
+        }
+
+        // try to get the correct offset
+        if (cursor) {
+            try {
+                let surface = cursor.get_surface();
+                x -= surface[1];
+                y -= surface[2];
+            } catch (err) {
+                logError(err);
+            }
+        }
 
         // correct the coordinates
-        this.x = x - this.xhot;
-        this.y = y - this.yhot;
+        this.x = x;
+        this.y = y;
     }
 
     update(settings) {
+        this.speed = settings.get_value('trail-speed').deep_unpack();
+        this.count = 0;
     }
 };
 

@@ -51,5 +51,10 @@
         <key name="spotlight-hide-speed" type="d">
             <default>0.25</default>
         </key>
+
+        <!-- Trail settings -->
+        <key name="trail-speed" type="i">
+            <default>2</default>
+        </key>
     </schema>
 </schemalist>
