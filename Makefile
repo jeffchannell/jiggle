@@ -3,7 +3,7 @@
 JIGGLE_DIR=$(shell pwd)
 JIGGLE_VERSION ?= latest
 JIGGLE_DEV_DIR := "${HOME}/.local/share/gnome-shell/extensions/jiggle-dev@jeffchannell.com"
-JIGGLE_PKG_LIST := effects/ icons/ schemas/ ui/ constants.js cursor.js extension.js history.js LICENSE.txt math.js metadata.json prefs.css prefs.js settings.js
+JIGGLE_PKG_LIST := effects/ icons/ schemas/ ui/ constants.js cursor.js extension.js history.js LICENSE.txt log.js math.js metadata.json prefs.css prefs.js settings.js
 
 build:
 	@rm jiggle_${JIGGLE_VERSION}.zip 2> /dev/null || true

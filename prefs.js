@@ -6,6 +6,7 @@ const {GObject, Gdk, Gtk} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const JConstants = Me.imports.constants;
+const JLog = Me.imports.log;
 const JSettings = Me.imports.settings;
 const {Effects} = Me.imports.effects;
 
@@ -29,6 +30,7 @@ const PrefsWidget = GObject.registerClass({
         // main settings
         'effect',
         'shake_threshold',
+        'log_level',
         // effects switcher and children
         'effect_stack',
         'jiggle_opts_cursor_scaling',
@@ -60,6 +62,7 @@ const PrefsWidget = GObject.registerClass({
         // set the main effect combobox value
         this._effect.set_active(effect);
         this._shake_threshold.set_value(settings.get_value('shake-threshold').deep_unpack());
+        this._log_level.set_active(settings.get_value('log-level').deep_unpack());
         this._use_system.set_active(settings.get_value('use-system').deep_unpack());
         this._hide_original.set_active(settings.get_value('hide-original').deep_unpack());
         this._growth_speed.set_value(settings.get_value('growth-speed').deep_unpack());
@@ -82,8 +85,14 @@ const PrefsWidget = GObject.registerClass({
     _onEffectChanged(widget) {
         let effect = widget.get_active();
         // set the value in the settings
-        settings.set_int('effect', effect);
+        settings.set_int(this._getGSettingsKeyFromWidgetName(widget), effect);
         this._setActiveEffect(effect)
+    }
+
+    _onLogLevelChanged(widget) {
+        let level = widget.get_active();
+        settings.set_int(this._getGSettingsKeyFromWidgetName(widget), level);
+        JLog.setLogLevel(level);
     }
 
     _onScaleFloatValueChanged(widget) {
