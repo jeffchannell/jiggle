@@ -2,7 +2,7 @@
 
 const {cairo, Gdk, Gio, GObject, St} = imports.gi;
 
-const Tweener = (function(){let i;try {i=imports.ui.tweener}catch(e){i=imports.tweener.tweener}return i})(); // Gnome 3.38 moved Tweener
+const Tweener = (function(){let i;try {i=imports.ui.tweener}catch(e){i=imports.tweener.tweener}return i})(); // Gnome 3.38
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -73,8 +73,8 @@ const ScalingIcon = GObject.registerClass({
 
             try {
                 let surface = this.system_cursor.get_surface();
-                this.cursor_xhot = surface[2];
-                this.cursor_yhot = surface[1];
+                this.cursor_xhot = surface[1];
+                this.cursor_yhot = surface[2];
             } catch (err) {
                 print('Jiggle Error: could not get x/y offset for cursor: '+err);
             }

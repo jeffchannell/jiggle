@@ -16,7 +16,7 @@ const PointerWatcher = imports.ui.pointerWatcher.getPointerWatcher();
 const JHistory = Me.imports.history;
 const JSettings = Me.imports.settings;
 // effects
-const {Effects, FireworksEffect, ScalingEffect, SpotlightEffect} = Me.imports.effects;
+const {Effects, FireworksEffect, ScalingEffect, SpotlightEffect, TrailEffect} = Me.imports.effects;
 
 const INTERVAL_MS = 10;
 
@@ -32,6 +32,7 @@ let settingsID;
  * Stop the listeners and clean up any leftover assets.
  */
 function disable() {
+    log('Jiggle disable');
     // reset to defaults
     jiggling = false;
     JHistory.clear();
@@ -41,14 +42,17 @@ function disable() {
     intervals.map(i => Mainloop.source_remove(i));
     intervals = [];
     // disconnect from the settings
-    settings.disconnect(settingsID);
-    settings = null;
+    if (settingsID) {
+        settings.disconnect(settingsID);
+        settings = null;
+    }
 }
 
 /**
  * Start the listeners.
  */
 function enable() {
+    log('Jiggle enable');
     // connect to the settings and update the application
     settings = JSettings.settings();
     settingsID = settings.connect('changed', update);
@@ -84,6 +88,8 @@ function enable() {
  * Initialize (required by Gnome Shell).
  */
 function init() {
+    log('Jiggle init');
+    disable(); // always ensure we start from a disabled state
 }
 
 function update() {
@@ -95,6 +101,9 @@ function update() {
         if (effectID !== newEffectID) {
             // TODO clean up the old effect
             switch (effectID = newEffectID) {
+            case Effects.TRAIL:
+                effect = TrailEffect.new_trail();
+                break;
             case Effects.FIREWORKS:
                 effect = FireworksEffect.new_fireworks();
                 break;
