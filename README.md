@@ -121,6 +121,9 @@ Or, test a single system:
 ```bash
 make docker_centos
 make docker_debian
+make docker_fedora
 ```
+
+Please note that this can be very slow, as the images are built locally.
 
 `© 2020 Jeff Channell`
