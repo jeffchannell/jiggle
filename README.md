@@ -8,8 +8,9 @@ Jiggle is a Gnome Shell extension that highlights the cursor position when the m
 
 | Setting | Description |
 |:---|:---|
-| Effect | Choose which effect is used when jiggling is detected. |
 | Shake Threshold | How vigorous the cursor must shake for jiggling to be detected. |
+| Log Level | How much Jiggle should log to journalctl. |
+| Effect | Choose which effect is used when jiggling is detected. |
 
 ### Cursor Scaling
 
@@ -41,6 +42,14 @@ Shine a spotlight on the cursor.
 | Size | Size of the spotlight. |
 | Show Speed | How fast the spotlight fades in once jiggling is detected. |
 | Hide Speed | How fast the spotlight fades once jiggling is no longer detected. |
+
+### Cursor Trail
+
+Leave a trail of cursors.
+
+| Setting | Description |
+|:---|:---|
+| Speed | Speed of the trail generation. |
 
 ## Known Issues
 
