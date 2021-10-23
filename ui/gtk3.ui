@@ -87,53 +87,6 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">start</property>
-            <property name="label" translatable="yes">Effect</property>
-            <property name="use_markup">True</property>
-            <property name="xalign">0.5</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkComboBoxText" id="effect">
-            <property name="name">effect</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="active">0</property>
-            <items>
-              <item translatable="yes">Cursor Scaling</item>
-              <item translatable="yes">Fireworks</item>
-              <item translatable="yes">Spotlight</item>
-              <item translatable="yes">Cursor Trail</item>
-            </items>
-            <signal name="changed" handler="_onEffectChanged" swapped="no"/>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="fill">True</property>
-        <property name="position">0</property>
-      </packing>
-    </child>
-    <child>
-      <object class="GtkBox">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="homogeneous">True</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="halign">start</property>
             <property name="label" translatable="yes">Shake Threshold</property>
             <property name="use_markup">True</property>
             <property name="xalign">0.5</property>
@@ -166,7 +119,7 @@
       <packing>
         <property name="expand">False</property>
         <property name="fill">True</property>
-        <property name="position">1</property>
+        <property name="position">0</property>
       </packing>
     </child>
     <child>
@@ -203,6 +156,53 @@
               <item translatable="yes">Debug</item>
             </items>
             <signal name="changed" handler="_onLogLevelChanged" swapped="no"/>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">True</property>
+        <property name="position">1</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="homogeneous">True</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="label" translatable="yes">Effect</property>
+            <property name="use_markup">True</property>
+            <property name="xalign">0.5</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkComboBoxText" id="effect">
+            <property name="name">effect</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="active">0</property>
+            <items>
+              <item translatable="yes">Cursor Scaling</item>
+              <item translatable="yes">Fireworks</item>
+              <item translatable="yes">Spotlight</item>
+              <item translatable="yes">Cursor Trail</item>
+            </items>
+            <signal name="changed" handler="_onEffectChanged" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>

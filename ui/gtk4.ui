@@ -82,33 +82,6 @@
           <object class="GtkLabel">
             <property name="can_focus">0</property>
             <property name="halign">start</property>
-            <property name="label" translatable="yes">Effect</property>
-            <property name="use_markup">1</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkComboBoxText" id="effect">
-            <property name="name">effect</property>
-            <property name="active">0</property>
-            <items>
-              <item translatable="yes">Cursor Scaling</item>
-              <item translatable="yes">Fireworks</item>
-              <item translatable="yes">Spotlight</item>
-              <item translatable="yes">Cursor Trail</item>
-            </items>
-            <signal name="changed" handler="_onEffectChanged" swapped="no"/>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkBox">
-        <property name="can_focus">0</property>
-        <property name="homogeneous">1</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="can_focus">0</property>
-            <property name="halign">start</property>
             <property name="label" translatable="yes">Shake Threshold</property>
             <property name="use_markup">1</property>
           </object>
@@ -151,6 +124,33 @@
               <item translatable="yes">Debug</item>
             </items>
             <signal name="changed" handler="_onLogLevelChanged" swapped="no"/>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="can_focus">0</property>
+        <property name="homogeneous">1</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="can_focus">0</property>
+            <property name="halign">start</property>
+            <property name="label" translatable="yes">Effect</property>
+            <property name="use_markup">1</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkComboBoxText" id="effect">
+            <property name="name">effect</property>
+            <property name="active">0</property>
+            <items>
+              <item translatable="yes">Cursor Scaling</item>
+              <item translatable="yes">Fireworks</item>
+              <item translatable="yes">Spotlight</item>
+              <item translatable="yes">Cursor Trail</item>
+            </items>
+            <signal name="changed" handler="_onEffectChanged" swapped="no"/>
           </object>
         </child>
       </object>
