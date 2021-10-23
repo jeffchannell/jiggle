@@ -66,6 +66,13 @@
     <property name="step_increment">1</property>
     <property name="page_increment">1</property>
   </object>
+  <object class="GtkAdjustment" id="adj_trail_speed">
+    <property name="lower">1</property>
+    <property name="upper">10</property>
+    <property name="value">2</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">1</property>
+  </object>
   <template class="PrefsWidget" parent="GtkBox">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -100,6 +107,7 @@
               <item translatable="yes">Cursor Scaling</item>
               <item translatable="yes">Fireworks</item>
               <item translatable="yes">Spotlight</item>
+              <item translatable="yes">Cursor Trail</item>
             </items>
             <signal name="changed" handler="_onEffectChanged" swapped="no"/>
           </object>
@@ -346,7 +354,7 @@
           </object>
           <packing>
             <property name="name">page0</property>
-            <property name="title" translatable="yes">page0</property>
+            <property name="title">page0</property>
           </packing>
         </child>
         <child>
@@ -495,7 +503,7 @@
           </object>
           <packing>
             <property name="name">page1</property>
-            <property name="title" translatable="yes">page1</property>
+            <property name="title">page1</property>
             <property name="position">1</property>
           </packing>
         </child>
@@ -645,8 +653,65 @@
           </object>
           <packing>
             <property name="name">page2</property>
-            <property name="title" translatable="yes">page2</property>
+            <property name="title">page2</property>
             <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="jiggle_opts_trail">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="homogeneous">True</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="label" translatable="yes">Speed</property>
+                    <property name="use_markup">True</property>
+                    <property name="xalign">0.5</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScale" id="trail_speed">
+                    <property name="name">trail_speed</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="adjustment">adj_trail_speed</property>
+                    <property name="show_fill_level">True</property>
+                    <property name="fill_level">10</property>
+                    <property name="round_digits">0</property>
+                    <property name="digits">0</property>
+                    <signal name="value-changed" handler="_onScaleIntValueChanged" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="name">page3</property>
+            <property name="title">page3</property>
+            <property name="position">3</property>
           </packing>
         </child>
       </object>

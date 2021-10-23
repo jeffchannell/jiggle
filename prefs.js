@@ -34,6 +34,7 @@ const PrefsWidget = GObject.registerClass({
         'jiggle_opts_cursor_scaling',
         'jiggle_opts_fireworks',
         'jiggle_opts_spotlight',
+        'jiggle_opts_trail',
         // Cursor Scaling settings
         'use_system',
         'hide_original',
@@ -47,6 +48,8 @@ const PrefsWidget = GObject.registerClass({
         'spotlight_size',
         'spotlight_show_speed',
         'spotlight_hide_speed',
+        // Trail settings
+        'trail_speed',
     ],
 }, class PrefsWidget extends Gtk.Box {
     _init(params = {}) {
@@ -67,6 +70,7 @@ const PrefsWidget = GObject.registerClass({
         this._spotlight_size.set_value(settings.get_value('spotlight-size').deep_unpack());
         this._spotlight_show_speed.set_value(settings.get_value('spotlight-show-speed').deep_unpack());
         this._spotlight_hide_speed.set_value(settings.get_value('spotlight-hide-speed').deep_unpack());
+        this._trail_speed.set_value(settings.get_value('trail-speed').deep_unpack());
 
         this._setActiveEffect(effect);
     }
@@ -103,6 +107,9 @@ const PrefsWidget = GObject.registerClass({
                 break;
             case Effects.SPOTLIGHT:
                 child = "spotlight";
+                break;
+            case Effects.TRAIL:
+                child = "trail";
                 break;
         }
         this._effect_stack.set_visible_child(this["_jiggle_opts_"+child]);
