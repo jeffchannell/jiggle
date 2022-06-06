@@ -3,6 +3,6 @@
     "name": "Jiggle",
     "description": "Jiggle is a Gnome Shell extension that highlights the cursor position when the mouse is moved rapidly.",
     "url": "https://github.com/jeffchannell/jiggle",
-    "shell-version": [ "3.36.3", "3.38.1", "40.0", "41.0" ],
-    "version": "9"
+    "shell-version": [ "3.36.3", "3.38.1", "40.0", "41.5", "42.1" ],
+    "version": "10"
 }
