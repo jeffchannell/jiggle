@@ -53,6 +53,10 @@ const ScalingIcon = GObject.registerClass({
                     (x - this.width / 2) + (this.cursor_xhot * r),
                     (y - this.height / 2) + (this.cursor_yhot * r)
                 );
+
+                if (this.hide_cursor) {
+                    Cursor.setPointerVisible(false);
+                }
             }
         }
     }
