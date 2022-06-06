@@ -36,22 +36,21 @@ const TrailEffect = class TrailEffect {
         this.count = 0;
         this.icons = [];
         this.icon = null;
+        this.jiggling = false;
         this.size = 24;
         this.speed = 2;
         this.x = 0;
         this.y = 0;
 
-        // required but not used for this effect
-        this.start = () => {};
-        this.stop = () => {};
-
         this.render = this.render.bind(this);
         this.run = this.run.bind(this);
+        this.start = this.start.bind(this);
+        this.stop = this.stop.bind(this);
         this.update = this.update.bind(this);
     }
 
     render() {
-        if (this.icon && (++this.count === this.speed)) {
+        if (this.icon && (this.jiggling || (++this.count === this.speed))) {
             this.count = 0;
             this.icons.push(new TrailIcon({
                 gicon: this.icon,
@@ -62,6 +61,14 @@ const TrailEffect = class TrailEffect {
                 y: this.y,
             }));
         }
+    }
+
+    start() {
+        this.jiggling = true;
+    }
+
+    stop() {
+        this.jiggling = false;
     }
 
     /**
