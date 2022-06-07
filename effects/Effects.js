@@ -5,13 +5,19 @@ var FIREWORKS = 1;
 var SPOTLIGHT = 2;
 var TRAIL = 3;
 
+var AnimationDirections = {
+    GROW: 1,
+    PAUSE: 0,
+    SHRINK: -1,
+};
+
 // formulas from https://easings.net
-const _transitions = {
+var Transitions = {
     easeInQuad: (x) => x * x,
     easeOutQuad: (x) => 1 - (1 - x) * (1 - x),
 };
 
-const _animate = (to, from, framecount, transition) => {
+var animate = (to, from, framecount, transition) => {
     let frames = [];
     
     for (let distance = from - to, idx = 0; idx <= framecount; idx++) {
@@ -20,6 +26,3 @@ const _animate = (to, from, framecount, transition) => {
 
     return frames;
 };
-
-var Transitions = _transitions;
-var animate = _animate;

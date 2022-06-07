@@ -9,12 +9,6 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Cursor = Me.imports.cursor;
 const { Effects } = Me.imports.effects;
 
-const ScalingIconAnimationDirection = {
-    GROW: 1,
-    PAUSE: 0,
-    SHRINK: -1,
-};
-
 const ScalingIcon = GObject.registerClass({
     GTypeName: 'ScalingIcon',
 }, class ScalingIcon extends St.Icon {
@@ -39,7 +33,7 @@ const ScalingIcon = GObject.registerClass({
         // the start() method will hide the cursor, attach the icon, and set this.animation to GROW (1)
         // the stop() method will set this.animation to SHRINK (-1)
         // the run() method checks the animation status and resizes the icon
-        this.animation = ScalingIconAnimationDirection.PAUSE;
+        this.animation = Effects.AnimationDirections.PAUSE;
         this.animation_current_frame = null;
         this.animation_frames = [];
 
@@ -64,10 +58,8 @@ const ScalingIcon = GObject.registerClass({
     run(x, y) {
         if (this.get_parent()) {
             // handle icon sizing
-            // when the animation is running, either backward or forward, adjust the size
             switch (this.animation) {
-                // when paused, do nothing
-                case ScalingIconAnimationDirection.PAUSE:
+                case Effects.AnimationDirections.PAUSE:
                     this.animation_current_frame = 0;
                     this.animation_frames = [];
                     this.current_size = this.system_cursor_size;
@@ -75,9 +67,8 @@ const ScalingIcon = GObject.registerClass({
                     if (this.hide_cursor) {
                         Cursor.setPointerVisible(true);
                     }
-                    break;
-                // when growing, only grow to the max (3x)
-                case ScalingIconAnimationDirection.GROW:
+                    return;
+                case Effects.AnimationDirections.GROW:
                     if (this.hide_cursor) {
                         Cursor.setPointerVisible(false);
                     }
@@ -87,15 +78,14 @@ const ScalingIcon = GObject.registerClass({
                         this.animation_current_frame = this.animation_frames.length;
                     }
                     break;
-                // when shrinking, only shrink to the default
-                case ScalingIconAnimationDirection.SHRINK:
+                case Effects.AnimationDirections.SHRINK:
                     if (this.hide_cursor) {
                         Cursor.setPointerVisible(false);
                     }
                     if (--this.animation_current_frame >= 0) {
                         this.current_size = this.animation_frames[(this.animation_frames.length - 1) - this.animation_current_frame];
                     } else {
-                        this.animation = ScalingIconAnimationDirection.PAUSE;
+                        this.animation = Effects.AnimationDirections.PAUSE;
                         this.animation_current_frame = 0;
                         this.animation_frames = [];
                     }
@@ -146,7 +136,7 @@ const ScalingIcon = GObject.registerClass({
             Main.uiGroup.add_actor(this);
         }
 
-        this.animation = ScalingIconAnimationDirection.GROW;
+        this.animation = Effects.AnimationDirections.GROW;
         this.animation_current_frame = this.animation_current_frame ?? 0;
         this.animation_frames = Effects.animate(this.current_size, this.system_cursor_size * this.cursor_scale_factor, this.growth_speed * this.speed_factor, Effects.Transitions.easeOutQuad);
         if (this.animation_current_frame >= this.animation_frames.length) {
@@ -155,9 +145,8 @@ const ScalingIcon = GObject.registerClass({
     }
 
     stop() {
-        this.animation = ScalingIconAnimationDirection.SHRINK;
-        this.animation_frames = Effects.animate(this.current_size, this.system_cursor_size, this.shrink_speed* this.speed_factor, Effects.Transitions.easeOutQuad);
-        // adjust for speed differences
+        this.animation = Effects.AnimationDirections.SHRINK;
+        this.animation_frames = Effects.animate(this.current_size, this.system_cursor_size, this.shrink_speed * this.speed_factor, Effects.Transitions.easeInQuad);
         if (this.animation_current_frame >= this.animation_frames.length) {
             this.animation_current_frame = this.animation_frames.length - 1;
         }
