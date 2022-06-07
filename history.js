@@ -60,5 +60,11 @@ function clear()
  */
 function push(x, y)
 {
+    if (x == 0 && y == 0) {
+        return;
+    }
+    if (x < 0 || y < 0) {
+        return;
+    }
     history.push({x: lastX = x, y: lastY = y, t: new Date().getTime()});
 }
