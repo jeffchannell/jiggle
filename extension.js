@@ -33,28 +33,23 @@ let settingsID;
  * Stop the listeners and clean up any leftover assets.
  */
 function disable() {
-    try {
-        JLog.logInfo('Jiggle disable');
-        // reset to defaults
-        jiggling = false;
-        JHistory.clear();
-        // remove our pointer listener
-        if (pointerListener) {
-            JLog.logDebug('Clearing pointer listener');
-            PointerWatcher._removeWatch(pointerListener);
-        }
-        // stop the interval
-        intervals.map(i => Mainloop.source_remove(i));
-        intervals = [];
-        // disconnect from the settings
-        if (settingsID) {
-            JLog.logDebug('Disconnecting from gsettings');
-            settings.disconnect(settingsID);
-            settings = null;
-        }
-    } catch (e) {
-        JLog.logErr(e);
-        throw e;
+    JLog.logInfo('Jiggle disable');
+    // reset to defaults
+    jiggling = false;
+    JHistory.clear();
+    // remove our pointer listener
+    if (pointerListener) {
+        JLog.logDebug('Clearing pointer listener');
+        PointerWatcher._removeWatch(pointerListener);
+    }
+    // stop the interval
+    intervals.map(i => Mainloop.source_remove(i));
+    intervals = [];
+    // disconnect from the settings
+    if (settingsID) {
+        JLog.logDebug('Disconnecting from gsettings');
+        settings.disconnect(settingsID);
+        settings = null;
     }
 }
 
@@ -100,7 +95,8 @@ function enable() {
             return true;
         }));
     } catch (e) {
-        JLog.logErr(e);
+        // ensure we clean up any leftovers if there's a problem!
+        disable();
         throw e;
     }
 }
@@ -110,7 +106,6 @@ function enable() {
  */
 function init() {
     JLog.logInfo('Jiggle init');
-    disable(); // always ensure we start from a disabled state
 }
 
 function update() {

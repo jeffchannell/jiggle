@@ -2,9 +2,11 @@
 
 const {cairo, Gdk, GObject, St} = imports.gi;
 
-const Tweener = (function(){let i;try {i=imports.ui.tweener}catch(e){i=imports.tweener.tweener}return i})(); // Gnome 3.38
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
+const { Effects } = Me.imports.effects;
 
 const SpotlightDrawingArea = GObject.registerClass({
     GTypeName: 'SpotlightDrawingArea',
@@ -18,7 +20,12 @@ const SpotlightDrawingArea = GObject.registerClass({
             opacity: 0,
             show_speed: 0.4,
             hide_speed: 0.25,
+            speed_factor: 100,
         };
+
+        this.animation = Effects.AnimationDirections.PAUSE;
+        this.animation_current_frame = null;
+        this.animation_frames = [];
 
         this.show();
 
@@ -55,6 +62,31 @@ const SpotlightDrawingArea = GObject.registerClass({
     run(x, y) {
         this.spotlight.x = x;
         this.spotlight.y = y;
+        switch (this.animation) {
+            case Effects.AnimationDirections.PAUSE:
+                this.animation_current_frame = 0;
+                this.animation_frames = [];
+                this.spotlight.opacity = 0;
+                if (this.get_parent()) {
+                    Main.uiGroup.remove_actor(this);
+                }
+                break;
+            case Effects.AnimationDirections.GROW:
+                if (++this.animation_current_frame === this.animation_frames.length) {
+                    --this.animation_current_frame;
+                }
+                this.spotlight.opacity = this.animation_frames[this.animation_current_frame];
+                break;
+            case Effects.AnimationDirections.SHRINK:
+                if (--this.animation_current_frame >= 0) {
+                    this.spotlight.opacity = this.animation_frames[(this.animation_frames.length - 1) - this.animation_current_frame];
+                } else {
+                    this.animation = Effects.AnimationDirections.PAUSE;
+                    this.animation_current_frame = 0;
+                    this.animation_frames = [];
+                }
+                break;
+        }
     }
 
     start() {
@@ -66,26 +98,20 @@ const SpotlightDrawingArea = GObject.registerClass({
             Main.uiGroup.add_actor(this);
         }
 
-        Tweener.pauseTweens(this.spotlight);
-        Tweener.removeTweens(this.spotlight);
-        Tweener.addTween(this.spotlight, {
-            opacity: 0.65,
-            time: this.spotlight.show_speed,
-            transition: 'easeOutQuad',
-        });
+        this.animation = Effects.AnimationDirections.GROW;
+        this.animation_current_frame = this.animation_current_frame ?? 0;
+        this.animation_frames = Effects.animate(this.spotlight.opacity, 0.65, this.spotlight.show_speed * this.spotlight.speed_factor, Effects.Transitions.easeOutQuad);
+        if (this.animation_current_frame >= this.animation_frames.length) {
+            this.animation_current_frame = this.animation_frames.length - 1;
+        }
     }
 
     stop() {
-        Tweener.pauseTweens(this.spotlight);
-        Tweener.removeTweens(this.spotlight);
-        Tweener.addTween(this.spotlight, {
-            opacity: 0,
-            time: this.spotlight.hide_speed,
-            transition: 'easeInQuad',
-            onComplete: () => {
-                Main.uiGroup.remove_actor(this);
-            }
-        });
+        this.animation = Effects.AnimationDirections.SHRINK;
+        this.animation_frames = Effects.animate(this.spotlight.opacity, 0, this.spotlight.hide_speed * this.spotlight.speed_factor, Effects.Transitions.easeInQuad);
+        if (this.animation_current_frame >= this.animation_frames.length) {
+            this.animation_current_frame = this.animation_frames.length - 1;
+        }
     }
 
     update(settings) {

@@ -2,12 +2,12 @@
 
 const {cairo, Gdk, Gio, GObject, St} = imports.gi;
 
-const Tweener = (function(){let i;try {i=imports.ui.tweener}catch(e){i=imports.tweener.tweener}return i})(); // Gnome 3.38
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Cursor = Me.imports.cursor;
+const { Effects } = Me.imports.effects;
 
 const ScalingIcon = GObject.registerClass({
     GTypeName: 'ScalingIcon',
@@ -24,7 +24,18 @@ const ScalingIcon = GObject.registerClass({
         this.current_size = this.custom_cursor_size;
         this.use_system = false;
         this.cursor_xhot = 6;
-        this.cursor_yhot = 4;
+        this.cursor_yhot = 8;
+        this.cursor_scale_factor = 3;
+        this.speed_factor = 100;
+
+        // since we can't use Tweener anymore and Clutter's "ease" doesn't work with icon sizes
+        // we have to roll our own animation handler :(
+        // the start() method will hide the cursor, attach the icon, and set this.animation to GROW (1)
+        // the stop() method will set this.animation to SHRINK (-1)
+        // the run() method checks the animation status and resizes the icon
+        this.animation = Effects.AnimationDirections.PAUSE;
+        this.animation_current_frame = null;
+        this.animation_frames = [];
 
         // these elements are not always available on init
         // thanks, Wayland (?)
@@ -46,18 +57,48 @@ const ScalingIcon = GObject.registerClass({
      */
     run(x, y) {
         if (this.get_parent()) {
-            let r = this.current_size / this.system_cursor_size;
-            if (this.get_parent()) {
-                this.set_icon_size(this.current_size);
-                this.set_position(
-                    (x - this.width / 2) + (this.cursor_xhot * r),
-                    (y - this.height / 2) + (this.cursor_yhot * r)
-                );
-
-                if (this.hide_cursor) {
-                    Cursor.setPointerVisible(false);
-                }
+            // handle icon sizing
+            switch (this.animation) {
+                case Effects.AnimationDirections.PAUSE:
+                    this.animation_current_frame = 0;
+                    this.animation_frames = [];
+                    this.current_size = this.system_cursor_size;
+                    Main.uiGroup.remove_actor(this);
+                    if (this.hide_cursor) {
+                        Cursor.setPointerVisible(true);
+                    }
+                    return;
+                case Effects.AnimationDirections.GROW:
+                    if (this.hide_cursor) {
+                        Cursor.setPointerVisible(false);
+                    }
+                    if (++this.animation_current_frame < this.animation_frames.length) {
+                        this.current_size = this.animation_frames[this.animation_current_frame];
+                    } else {
+                        this.animation_current_frame = this.animation_frames.length;
+                    }
+                    break;
+                case Effects.AnimationDirections.SHRINK:
+                    if (this.hide_cursor) {
+                        Cursor.setPointerVisible(false);
+                    }
+                    if (--this.animation_current_frame >= 0) {
+                        this.current_size = this.animation_frames[(this.animation_frames.length - 1) - this.animation_current_frame];
+                    } else {
+                        this.animation = Effects.AnimationDirections.PAUSE;
+                        this.animation_current_frame = 0;
+                        this.animation_frames = [];
+                    }
+                    break;
             }
+            this.set_icon_size(this.current_size);
+
+            // handle icon positioning
+            let r = this.current_size / this.system_cursor_size;
+            this.set_position(
+                (x - this.width / 2) + (this.cursor_xhot * r),
+                (y - this.height / 2) + (this.cursor_yhot * r)
+            );
         }
     }
 
@@ -75,10 +116,13 @@ const ScalingIcon = GObject.registerClass({
                 return;
             }
 
+            this.current_size = this.system_cursor_size;
+
             try {
                 let surface = this.system_cursor.get_surface();
-                this.cursor_xhot = surface[1];
-                this.cursor_yhot = surface[2];
+                // this isn't quite right still, but better than it was?
+                this.cursor_xhot = surface[1] * 1.5;
+                this.cursor_yhot = surface[2] * 2;
             } catch (err) {
                 print('Jiggle Error: could not get x/y offset for cursor: '+err);
             }
@@ -91,30 +135,21 @@ const ScalingIcon = GObject.registerClass({
         if (!this.get_parent()) {
             Main.uiGroup.add_actor(this);
         }
-    
-        Tweener.pauseTweens(this);
-        Tweener.removeTweens(this);
-        Tweener.addTween(this, {
-            current_size: this.system_cursor_size * 3,
-            time: this.growth_speed,
-            transition: 'easeOutQuad',
-        });
+
+        this.animation = Effects.AnimationDirections.GROW;
+        this.animation_current_frame = this.animation_current_frame ?? 0;
+        this.animation_frames = Effects.animate(this.current_size, this.system_cursor_size * this.cursor_scale_factor, this.growth_speed * this.speed_factor, Effects.Transitions.easeOutQuad);
+        if (this.animation_current_frame >= this.animation_frames.length) {
+            this.animation_current_frame = this.animation_frames.length - 1;
+        }
     }
 
     stop() {
-        Tweener.pauseTweens(this);
-        Tweener.removeTweens(this);
-        Tweener.addTween(this, {
-            current_size: this.system_cursor_size,
-            time: this.shrink_speed,
-            transition: 'easeInQuad',
-            onComplete: () => {
-                Main.uiGroup.remove_actor(this);
-                if (this.hide_cursor) {
-                    Cursor.setPointerVisible(true);
-                }
-            }
-        });
+        this.animation = Effects.AnimationDirections.SHRINK;
+        this.animation_frames = Effects.animate(this.current_size, this.system_cursor_size, this.shrink_speed * this.speed_factor, Effects.Transitions.easeInQuad);
+        if (this.animation_current_frame >= this.animation_frames.length) {
+            this.animation_current_frame = this.animation_frames.length - 1;
+        }
     }
 
     update(settings) {
