@@ -19,8 +19,6 @@ if (JConstants.IS_GNOME_40) {
     Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
-let settings;
-
 const PrefsWidget = GObject.registerClass({
     GTypeName: 'PrefsWidget',
     CssName: 'PrefsWidget',
@@ -56,24 +54,25 @@ const PrefsWidget = GObject.registerClass({
 }, class PrefsWidget extends Gtk.Box {
     _init(params = {}) {
         super._init(params);
+        this._settings = JSettings.settings();
 
-        let effect = settings.get_value('effect').deep_unpack();
+        let effect = this._settings.get_value('effect').deep_unpack();
 
         // set the main effect combobox value
         this._effect.set_active(effect);
-        this._shake_threshold.set_value(settings.get_value('shake-threshold').deep_unpack());
-        this._log_level.set_active(settings.get_value('log-level').deep_unpack());
-        this._use_system.set_active(settings.get_value('use-system').deep_unpack());
-        this._hide_original.set_active(settings.get_value('hide-original').deep_unpack());
-        this._growth_speed.set_value(settings.get_value('growth-speed').deep_unpack());
-        this._shrink_speed.set_value(settings.get_value('shrink-speed').deep_unpack());
-        this._fireworks_burst_speed.set_value(settings.get_value('fireworks-burst-speed').deep_unpack());
-        this._fireworks_spark_count.set_value(settings.get_value('fireworks-spark-count').deep_unpack());
-        this._fireworks_spark_trail.set_value(settings.get_value('fireworks-spark-trail').deep_unpack());
-        this._spotlight_size.set_value(settings.get_value('spotlight-size').deep_unpack());
-        this._spotlight_show_speed.set_value(settings.get_value('spotlight-show-speed').deep_unpack());
-        this._spotlight_hide_speed.set_value(settings.get_value('spotlight-hide-speed').deep_unpack());
-        this._trail_speed.set_value(settings.get_value('trail-speed').deep_unpack());
+        this._shake_threshold.set_value(this._settings.get_value('shake-threshold').deep_unpack());
+        this._log_level.set_active(this._settings.get_value('log-level').deep_unpack());
+        this._use_system.set_active(this._settings.get_value('use-system').deep_unpack());
+        this._hide_original.set_active(this._settings.get_value('hide-original').deep_unpack());
+        this._growth_speed.set_value(this._settings.get_value('growth-speed').deep_unpack());
+        this._shrink_speed.set_value(this._settings.get_value('shrink-speed').deep_unpack());
+        this._fireworks_burst_speed.set_value(this._settings.get_value('fireworks-burst-speed').deep_unpack());
+        this._fireworks_spark_count.set_value(this._settings.get_value('fireworks-spark-count').deep_unpack());
+        this._fireworks_spark_trail.set_value(this._settings.get_value('fireworks-spark-trail').deep_unpack());
+        this._spotlight_size.set_value(this._settings.get_value('spotlight-size').deep_unpack());
+        this._spotlight_show_speed.set_value(this._settings.get_value('spotlight-show-speed').deep_unpack());
+        this._spotlight_hide_speed.set_value(this._settings.get_value('spotlight-hide-speed').deep_unpack());
+        this._trail_speed.set_value(this._settings.get_value('trail-speed').deep_unpack());
 
         this._setActiveEffect(effect);
     }
@@ -85,26 +84,26 @@ const PrefsWidget = GObject.registerClass({
     _onEffectChanged(widget) {
         let effect = widget.get_active();
         // set the value in the settings
-        settings.set_int(this._getGSettingsKeyFromWidgetName(widget), effect);
+        this._settings.set_int(this._getGSettingsKeyFromWidgetName(widget), effect);
         this._setActiveEffect(effect)
     }
 
     _onLogLevelChanged(widget) {
         let level = widget.get_active();
-        settings.set_int(this._getGSettingsKeyFromWidgetName(widget), level);
+        this._settings.set_int(this._getGSettingsKeyFromWidgetName(widget), level);
         JLog.setLogLevel(level);
     }
 
     _onScaleFloatValueChanged(widget) {
-        settings.set_double(this._getGSettingsKeyFromWidgetName(widget), widget.get_value());
+        this._settings.set_double(this._getGSettingsKeyFromWidgetName(widget), widget.get_value());
     }
 
     _onScaleIntValueChanged(widget) {
-        settings.set_int(this._getGSettingsKeyFromWidgetName(widget), widget.get_value());
+        this._settings.set_int(this._getGSettingsKeyFromWidgetName(widget), widget.get_value());
     }
 
     _onSwitchStateSet(widget, state) {
-        settings.set_boolean(this._getGSettingsKeyFromWidgetName(widget), state);
+        this._settings.set_boolean(this._getGSettingsKeyFromWidgetName(widget), state);
         widget.set_active(state);
     }
 
@@ -127,7 +126,6 @@ const PrefsWidget = GObject.registerClass({
 
 // Like `extension.js` this is used for any one-time setup like translations.
 function init() {
-    settings = JSettings.settings();
 }
 
 // This function is called when the preferences window is first created to build and return a Gtk widget.
