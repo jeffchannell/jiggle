@@ -1,18 +1,17 @@
-'use strict';
+import Cairo from 'gi://cairo';
+import GObject from 'gi://GObject';
+import St from 'gi://St';
 
-const {cairo, Gdk, GObject, St} = imports.gi;
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-const Main = imports.ui.main;
-const Mainloop = imports.mainloop;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const { Effects } = Me.imports.effects;
+import * as Cursor from '../cursor.js';
+import * as Effects from './Effects.js';
 
 const SpotlightDrawingArea = GObject.registerClass({
     GTypeName: 'SpotlightDrawingArea',
 }, class SpotlightDrawingArea extends St.DrawingArea {
-    _init(params = {}) {
-        super._init(params);
+    constructor(params = {}) {
+        super(params);
         this.spotlight = {
             x: 0,
             y: 0,
@@ -46,7 +45,7 @@ const SpotlightDrawingArea = GObject.registerClass({
         let context = this.get_context();
         context.setSourceRGBA(0, 0, 0, this.spotlight.opacity);
         context.paint();
-        context.setOperator(cairo.Operator.CLEAR);
+        context.setOperator(Cairo.Operator.CLEAR);
         context.arc(this.spotlight.x, this.spotlight.y, this.spotlight.size, 0, 2*Math.PI);
         context.fill();
         context.$dispose();
@@ -68,7 +67,7 @@ const SpotlightDrawingArea = GObject.registerClass({
                 this.animation_frames = [];
                 this.spotlight.opacity = 0;
                 if (this.get_parent()) {
-                    Main.uiGroup.remove_actor(this);
+                    Main.uiGroup.remove_child(this);
                 }
                 break;
             case Effects.AnimationDirections.GROW:
@@ -90,12 +89,12 @@ const SpotlightDrawingArea = GObject.registerClass({
     }
 
     start() {
-        let screen = Gdk.Display.get_default().get_default_screen();
-        this.set_height(screen.get_height());
-        this.set_width(screen.get_width());
+        const [width, height] = Cursor.screenSize();
+        this.set_height(height);
+        this.set_width(width);
 
         if (!this.get_parent()) {
-            Main.uiGroup.add_actor(this);
+            Main.uiGroup.add_child(this);
         }
 
         this.animation = Effects.AnimationDirections.GROW;
@@ -121,6 +120,6 @@ const SpotlightDrawingArea = GObject.registerClass({
     }
 });
 
-function new_effect() {
+export function new_effect() {
     return new SpotlightDrawingArea({visible: true, x: 0, y: 0});
 }

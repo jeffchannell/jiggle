@@ -1,13 +1,14 @@
-const gjsunit = imports.gjsunit;
+import Gio from 'gi://Gio';
+import * as gjsunit from './gjsunit.js';
 
-let suite = new gjsunit.Suite("settings.js");
+let suite = new gjsunit.Suite("settings schema");
 
-suite.addTest("settings", function() {
-    let s = imports.settings.settings();
-    gjsunit.assertEquals('object', typeof s);
+suite.addTest("schema loads", function() {
+    const source = Gio.SettingsSchemaSource.new_from_directory('schemas', Gio.SettingsSchemaSource.get_default(), false);
+    const schema = source.lookup('org.gnome.shell.extensions.jiggle', true);
+    gjsunit.assertNotNull(schema);
+    const s = new Gio.Settings({settings_schema: schema});
     gjsunit.assertEquals('function', typeof s.connect);
-    gjsunit.assertEquals('function', typeof s.disconnect);
     gjsunit.assertEquals('function', typeof s.get_value);
-    gjsunit.assertEquals('function', typeof s.set_double);
-    gjsunit.assertEquals('function', typeof s.set_int);
+    gjsunit.assertEquals(180, s.get_int('shake-threshold'));
 });

@@ -1,26 +1,19 @@
-#!/usr/bin/gjs --include-path=.
+#!/usr/bin/gjs -m
 
-imports.gi.versions.Gdk = imports.gi.versions.Gtk = '3.0';
-
-const {Gio, Gtk} = imports.gi;
-const gjsunit = imports.gjsunit;
-
-Gtk.init(null);
+import Gio from 'gi://Gio';
+import * as gjsunit from './gjsunit.js';
 
 // find all *_test.js files and import them
-let dir = Gio.File.new_for_path('.');
-let file;
-try {
-    file = dir.enumerate_children('standard::name,standard::type', Gio.FileQueryInfoFlags.NONE, null);
-    let info;
-    let regex = /(_test)\.js$/;
-    while ((info = file.next_file(null))) {
-        let name = file.get_child(info).get_basename();
-        if (name.match(regex)) {
-            imports[name.replace(regex, '$1')];
-        }
-    }
-    gjsunit.instance.run();
-} catch (e) {
-    print('Error running tests: ' + e);
+const dir = Gio.File.new_for_path('.');
+const regex = /_test\.js$/;
+const names = [];
+const children = dir.enumerate_children('standard::name', Gio.FileQueryInfoFlags.NONE, null);
+let info;
+while ((info = children.next_file(null))) {
+    if (regex.test(info.get_name())) names.push(info.get_name());
 }
+for (const name of names.sort()) {
+    await import(`./${name}`);
+}
+import System from "system";
+System.exit(gjsunit.instance.run() ? 0 : 1);

@@ -1,4 +1,5 @@
-const gjsunit = imports.gjsunit;
+import * as gjsunit from './gjsunit.js';
+import * as history from './history.js';
 
 let suite = new gjsunit.Suite("history.js");
 
@@ -76,7 +77,6 @@ let check_cases = [
 ];
 
 suite.addTest("check", function() {
-    let history = imports.history;
     // no history means no jiggling
     gjsunit.assertFalse(history.check());
     // add some history
@@ -88,17 +88,16 @@ suite.addTest("check", function() {
 });
 
 suite.addTest("clear", function() {
-    let history = imports.history;
 
     // reset
     history.clear();
     // last x & y should be 0
-    gjsunit.assertEquals(0, history.lastX);
-    gjsunit.assertEquals(0, history.lastY);
+    gjsunit.assertEquals(0, history.state.lastX);
+    gjsunit.assertEquals(0, history.state.lastY);
     // add some history
     history.push(10, 20);
     // last x & y should be set
-    gjsunit.assertEquals(10, history.lastX);
-    gjsunit.assertEquals(20, history.lastY);
+    gjsunit.assertEquals(10, history.state.lastX);
+    gjsunit.assertEquals(20, history.state.lastY);
     history.clear();
 });

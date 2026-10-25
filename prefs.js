@@ -1,28 +1,20 @@
-'use strict';
+import Adw from 'gi://Adw';
+import Gdk from 'gi://Gdk';
+import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+import Gtk from 'gi://Gtk';
 
-const {GObject, Gdk, Gtk} = imports.gi;
+import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-// It's common practice to keep GNOME API and JS imports in separate blocks
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const JConstants = Me.imports.constants;
-const JLog = Me.imports.log;
-const JSettings = Me.imports.settings;
-const {Effects} = Me.imports.effects;
+import * as JLog from './log.js';
+import * as Effects from './effects/Effects.js';
 
-let provider = new Gtk.CssProvider();
-
-provider.load_from_path(Me.dir.get_path() + '/prefs.css');
-if (JConstants.IS_GNOME_40) {
-    Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
-} else {
-    Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
-}
+const resolve = (path) => GLib.uri_resolve_relative(import.meta.url, path, GLib.UriFlags.NONE);
 
 const PrefsWidget = GObject.registerClass({
     GTypeName: 'PrefsWidget',
     CssName: 'PrefsWidget',
-    Template: Me.dir.get_child('ui').get_child(JConstants.IS_GNOME_40 ? 'gtk4.ui' : 'gtk3.ui').get_uri(),
+    Template: resolve('ui/gtk4.ui'),
     // required to enable reading children from template
     InternalChildren: [
         // main settings
@@ -52,16 +44,17 @@ const PrefsWidget = GObject.registerClass({
         'trail_speed',
     ],
 }, class PrefsWidget extends Gtk.Box {
-    _init(params = {}) {
-        super._init(params);
-        this._settings = JSettings.settings();
+    constructor(settings, params = {}) {
+        super(params);
+        this._settings = settings;
 
         let effect = this._settings.get_value('effect').deep_unpack();
 
         // set the main effect combobox value
         this._effect.set_active(effect);
         this._shake_threshold.set_value(this._settings.get_value('shake-threshold').deep_unpack());
-        this._log_level.set_active(this._settings.get_value('log-level').deep_unpack());
+        // older versions defaulted to 7, which is not one of the dropdown entries
+        this._log_level.set_active(Math.min(this._settings.get_value('log-level').deep_unpack(), 4));
         this._use_system.set_active(this._settings.get_value('use-system').deep_unpack());
         this._hide_original.set_active(this._settings.get_value('hide-original').deep_unpack());
         this._growth_speed.set_value(this._settings.get_value('growth-speed').deep_unpack());
@@ -124,11 +117,16 @@ const PrefsWidget = GObject.registerClass({
     }
 });
 
-// Like `extension.js` this is used for any one-time setup like translations.
-function init() {
-}
+export default class JigglePreferences extends ExtensionPreferences {
+    fillPreferencesWindow(window) {
+        const provider = new Gtk.CssProvider();
+        provider.load_from_path(this.path + '/prefs.css');
+        Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
 
-// This function is called when the preferences window is first created to build and return a Gtk widget.
-function buildPrefsWidget() {
-    return new PrefsWidget();
+        const page = new Adw.PreferencesPage();
+        const group = new Adw.PreferencesGroup();
+        group.add(new PrefsWidget(this.getSettings()));
+        page.add(group);
+        window.add(page);
+    }
 }

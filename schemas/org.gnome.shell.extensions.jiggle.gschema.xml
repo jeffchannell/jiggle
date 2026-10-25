@@ -9,7 +9,7 @@
         </key>
         <!-- Log level -->
         <key name="log-level" type="i">
-            <default>7</default>
+            <default>2</default>
         </key>
 
         <!-- Cursor Scaling mode settings -->

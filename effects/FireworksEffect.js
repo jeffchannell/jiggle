@@ -1,11 +1,11 @@
-'use strict';
-
 // borrowed/adapted from https://slicker.me/javascript/fireworks.htm
 
-const {cairo, Gdk, GObject, St} = imports.gi;
+import GObject from 'gi://GObject';
+import St from 'gi://St';
 
-const Main = imports.ui.main;
-const Mainloop = imports.mainloop;
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+
+import * as Cursor from '../cursor.js';
 
 // TODO add more color variance, maybe some themes ??
 
@@ -65,8 +65,8 @@ const Firework = class Firework {
 const FireworksDrawingArea = GObject.registerClass({
     GTypeName: 'FireworksDrawingArea',
 }, class FireworksDrawingArea extends St.DrawingArea {
-    _init(params = {}) {
-        super._init(params);
+    constructor(params = {}) {
+        super(params);
         this.fireworks = [];
         this.show_speed = 0.2;
         this.hide_speed = 0.2;
@@ -125,18 +125,18 @@ const FireworksDrawingArea = GObject.registerClass({
                     this.fireworks.push(new Firework(x, y, this.spark_count, this.spark_trail, this.burst_speed));
                 }
             } else if (0 === this.fireworks.length) {
-                Main.uiGroup.remove_actor(this);
+                Main.uiGroup.remove_child(this);
             }
         }
     }
 
     start() {
-        let screen = Gdk.Display.get_default().get_default_screen();
-        this.set_height(screen.get_height());
-        this.set_width(screen.get_width());
+        const [width, height] = Cursor.screenSize();
+        this.set_height(height);
+        this.set_width(width);
         this.create_new = true;
         if (!this.get_parent()) {
-            Main.uiGroup.add_actor(this);
+            Main.uiGroup.add_child(this);
         }
     }
 
@@ -151,6 +151,6 @@ const FireworksDrawingArea = GObject.registerClass({
     }
 });
 
-function new_effect() {
+export function new_effect() {
     return new FireworksDrawingArea({visible: true, x: 0, y: 0});
 }

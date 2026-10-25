@@ -1,22 +1,21 @@
-'use strict';
+import Clutter from 'gi://Clutter';
+import Gio from 'gi://Gio';
+import GObject from 'gi://GObject';
+import St from 'gi://St';
 
-const {cairo, Gdk, Gio, GObject, St} = imports.gi;
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-const Main = imports.ui.main;
-const Mainloop = imports.mainloop;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Cursor = Me.imports.cursor;
-const { Effects } = Me.imports.effects;
+import * as Cursor from '../cursor.js';
+import * as Effects from './Effects.js';
 
 const ScalingIcon = GObject.registerClass({
     GTypeName: 'ScalingIcon',
 }, class ScalingIcon extends St.Icon {
-    _init(params = {}) {
-        super._init(params);
+    constructor(path, params = {}) {
+        super(params);
 
         this.hide_cursor = true;
-        this.custom_cursor = Gio.icon_new_for_string(Me.path + "/icons/jiggle-cursor.png");
+        this.custom_cursor = Gio.icon_new_for_string(path + "/icons/jiggle-cursor.png");
         this.custom_cursor_size = 96;
         this.growth_speed = 0.25;
         this.shrink_speed = 0.15;
@@ -63,7 +62,7 @@ const ScalingIcon = GObject.registerClass({
                     this.animation_current_frame = 0;
                     this.animation_frames = [];
                     this.current_size = this.system_cursor_size;
-                    Main.uiGroup.remove_actor(this);
+                    Main.uiGroup.remove_child(this);
                     if (this.hide_cursor) {
                         Cursor.setPointerVisible(true);
                     }
@@ -92,6 +91,7 @@ const ScalingIcon = GObject.registerClass({
                     break;
             }
             this.set_icon_size(this.current_size);
+            this.set_size(this.current_size, this.current_size);
 
             // handle icon positioning
             let r = this.current_size / this.system_cursor_size;
@@ -102,30 +102,32 @@ const ScalingIcon = GObject.registerClass({
         }
     }
 
+    /**
+     * Pick the bundled cursor or a snapshot of the system cursor, depending on the settings.
+     */
+    _applyCursorImage() {
+        const system = this.use_system ? Cursor.systemCursorContent() : null;
+        if (system) {
+            this.gicon = null;
+            this.content = system.content;
+            this.content_gravity = Clutter.ContentGravity.RESIZE_ASPECT;
+            this.system_cursor_size = system.size;
+        } else {
+            this.content = null;
+            this.gicon = this.custom_cursor;
+            this.system_cursor_size = Cursor.systemCursorSize();
+        }
+        this.current_size = this.system_cursor_size;
+    }
+
     start() {
-        // hack, to prevent crashes on Wayland
-        if (!this.system_cursor) {
-            // attempt to get the system cursor for the first time
-            try {
-                let display = Gdk.Display.get_default();
-                this.system_cursor = Gdk.Cursor.new_from_name(display, 'arrow');
-                this.system_cursor_size = this.system_cursor.get_image().get_width();
-            } catch (err) {
-                print('Jiggle Error: could not get system cursor: '+err);
-
-                return;
-            }
-
-            this.current_size = this.system_cursor_size;
-
-            try {
-                let surface = this.system_cursor.get_surface();
-                // this isn't quite right still, but better than it was?
-                this.cursor_xhot = surface[1] * 1.5;
-                this.cursor_yhot = surface[2] * 2;
-            } catch (err) {
-                print('Jiggle Error: could not get x/y offset for cursor: '+err);
-            }
+        // only refresh the image while idle: mid-animation the real pointer is already hidden
+        if (!this.get_parent()) {
+            this.system_cursor = true;
+            this._applyCursorImage();
+            const [xhot, yhot] = Cursor.systemCursorHotspot();
+            this.cursor_xhot = xhot;
+            this.cursor_yhot = yhot;
         }
 
         if (this.hide_cursor) {
@@ -133,7 +135,7 @@ const ScalingIcon = GObject.registerClass({
         }
 
         if (!this.get_parent()) {
-            Main.uiGroup.add_actor(this);
+            Main.uiGroup.add_child(this);
         }
 
         this.animation = Effects.AnimationDirections.GROW;
@@ -158,15 +160,14 @@ const ScalingIcon = GObject.registerClass({
         this.growth_speed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('growth-speed').deep_unpack())));
         this.shrink_speed = Math.max(0.1, Math.min(1.0, parseFloat(settings.get_value('shrink-speed').deep_unpack())));
         if (!this.use_system) {
+            this.content = null;
             this.gicon = this.custom_cursor;
-        } else if (this.system_cursor) {
-            this.gicon = this.system_cursor.get_image();
         }
     }
 });
 
-function new_effect() {
-    return new ScalingIcon({
+export function new_effect(ext) {
+    return new ScalingIcon(ext.path, {
         visible: true,
     });
 }

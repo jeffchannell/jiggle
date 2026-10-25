@@ -1,32 +1,24 @@
-'use strict';
 
 const HISTORY_MAX = 500;
 const SHAKE_DEGREES = 500;
 
-const Me = imports.misc.extensionUtils.getCurrentExtension();
-const math = Me.imports.math;
+import * as math from './math.js';
 
 let history = [];
-var lastX = 0;
-var lastY = 0;
-var threshold = 300;
+export const state = {lastX: 0, lastY: 0, threshold: 300};
 
 /**
  * Check history and report whether the mouse is jiggling.
  * 
  * @return {Boolean}
  */
-function check()
+export function check()
 {
     // get the current loop timestamp
     let now = new Date().getTime();
 
     // prune stale buffer
-    for (let i = 0; i < history.length; ++i) {
-        if (now - history[i].t > HISTORY_MAX) {
-            history.splice(i, 1);
-        }
-    }
+    history = history.filter(h => now - h.t <= HISTORY_MAX);
 
     // reset degrees so we can add them again
     let degrees = 0;
@@ -39,16 +31,16 @@ function check()
         }
     }
 
-    return (degrees > SHAKE_DEGREES && max > threshold);
+    return (degrees > SHAKE_DEGREES && max > state.threshold);
 }
 
 /**
  * Clear the history.
  */
-function clear()
+export function clear()
 {
-    lastX = 0;
-    lastY = 0;
+    state.lastX = 0;
+    state.lastY = 0;
     history = [];
 }
 
@@ -58,7 +50,7 @@ function clear()
  * @param {Number} x 
  * @param {Number} y 
  */
-function push(x, y)
+export function push(x, y)
 {
     if (x == 0 && y == 0) {
         return;
@@ -66,5 +58,5 @@ function push(x, y)
     if (x < 0 || y < 0) {
         return;
     }
-    history.push({x: lastX = x, y: lastY = y, t: new Date().getTime()});
+    history.push({x: state.lastX = x, y: state.lastY = y, t: new Date().getTime()});
 }

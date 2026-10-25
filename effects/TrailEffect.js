@@ -1,41 +1,43 @@
-'use strict';
+import Clutter from 'gi://Clutter';
+import Gio from 'gi://Gio';
+import GObject from 'gi://GObject';
+import St from 'gi://St';
 
-const {Gdk, GObject, St} = imports.gi;
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-const Tweener = (function(){let i;try {i=imports.ui.tweener}catch(e){i=imports.tweener.tweener}return i})(); // Gnome 3.38
-const Main = imports.ui.main;
+import * as Cursor from '../cursor.js';
 
 const TrailIcon = GObject.registerClass({
     GTypeName: 'TrailIcon',
 }, class TrailIcon extends St.Icon {
-    _init(params = {}) {
-        super._init(params);
+    constructor(params = {}) {
+        super(params);
 
         this.complete = false;
 
         // add to stage
-        Main.uiGroup.add_actor(this);
+        Main.uiGroup.add_child(this);
 
         // fade out icon
-        Tweener.pauseTweens(this);
-        Tweener.removeTweens(this);
-        Tweener.addTween(this, {
+        this.remove_all_transitions();
+        this.ease({
             opacity: 0,
-            time: 1,
-            transition: 'easeOutQuad',
+            duration: 1000,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             onComplete: () => {
-                Main.uiGroup.remove_actor(this);
+                Main.uiGroup.remove_child(this);
                 this.complete = true;
-            }
+            },
         });
     }
 });
 
 const TrailEffect = class TrailEffect {
-    constructor() {
+    constructor(path) {
         this.count = 0;
         this.icons = [];
-        this.icon = null;
+        // Gdk is not available in the shell process, so use the bundled cursor image
+        this.icon = Gio.icon_new_for_string(path + '/icons/jiggle-cursor.png');
         this.size = 24;
         this.speed = 2;
         this.x = 0;
@@ -69,39 +71,19 @@ const TrailEffect = class TrailEffect {
      */
     run(x, y) {
         // remove any completed icons
-        this.icons.filter((i) => !i.complete);
+        this.icons = this.icons.filter((i) => !i.complete);
 
-        let cursor;
-
-        // attempt to get the system cursor for the first time
-        try {
-            let display = Gdk.Display.get_default();
-            cursor = Gdk.Cursor.new_from_name(display, 'arrow');
-            let image = cursor.get_image();
-            
-            this.size = image.get_width();
-            this.icon = image;
-        } catch (err) {
-            logError(err);
-            this.icon = null;
-
-            return;
-        }
-
-        // try to get the correct offset
-        if (cursor) {
-            try {
-                let surface = cursor.get_surface();
-                x -= surface[1];
-                y -= surface[2];
-            } catch (err) {
-                logError(err);
-            }
-        }
+        this.size = Cursor.systemCursorSize();
+        const [xhot, yhot] = Cursor.systemCursorHotspot();
 
         // correct the coordinates
-        this.x = x;
-        this.y = y;
+        this.x = x - xhot;
+        this.y = y - yhot;
+    }
+
+    destroy() {
+        this.icons.forEach((i) => i.destroy());
+        this.icons = [];
     }
 
     update(settings) {
@@ -110,6 +92,6 @@ const TrailEffect = class TrailEffect {
     }
 };
 
-function new_effect() {
-    return new TrailEffect();
+export function new_effect(ext) {
+    return new TrailEffect(ext.path);
 }
